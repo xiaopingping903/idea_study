@@ -1,0 +1,3 @@
+logback.xml
+
+<logger name="com.XXX.dao" level="DEBUG"/>
