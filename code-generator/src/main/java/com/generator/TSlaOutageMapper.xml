@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.generator.TSlaOutageMapper" >
+  <resultMap id="BaseResultMap" type="com.generator.TSlaOutage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="project" property="project" jdbcType="VARCHAR" />
+    <result column="project_id" property="projectId" jdbcType="VARCHAR" />
+    <result column="service_name" property="serviceName" jdbcType="VARCHAR" />
+    <result column="service_id" property="serviceId" jdbcType="VARCHAR" />
+    <result column="outage_end_date" property="outageEndDate" jdbcType="TIMESTAMP" />
+    <result column="outage_start_date" property="outageStartDate" jdbcType="TIMESTAMP" />
+    <result column="outage_time" property="outageTime" jdbcType="INTEGER" />
+    <result column="if_overtime" property="ifOvertime" jdbcType="CHAR" />
+    <result column="if_not_run" property="ifNotRun" jdbcType="CHAR" />
+    <result column="deduct_score" property="deductScore" jdbcType="INTEGER" />
+    <result column="lost_money" property="lostMoney" jdbcType="DOUBLE" />
+    <result column="cut_payment" property="cutPayment" jdbcType="INTEGER" />
+    <result column="outage_confirm_date" property="outageConfirmDate" jdbcType="TIMESTAMP" />
+    <result column="supplier" property="supplier" jdbcType="VARCHAR" />
+    <result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+    <result column="paas_id" property="paasId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="if_del" property="ifDel" jdbcType="CHAR" />
+    <result column="t_sla_list_id" property="tSlaListId" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, project, project_id, service_name, service_id, outage_end_date, outage_start_date, 
+    outage_time, if_overtime, if_not_run, deduct_score, lost_money, cut_payment, outage_confirm_date, 
+    supplier, supplier_id, create_time, operator, operator_id, paas_id, status, if_del, 
+    t_sla_list_id, url
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sla_outage
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_sla_outage
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.generator.TSlaOutage" >
+    insert into t_sla_outage (id, project, project_id, 
+      service_name, service_id, outage_end_date, 
+      outage_start_date, outage_time, if_overtime, 
+      if_not_run, deduct_score, lost_money, 
+      cut_payment, outage_confirm_date, supplier, 
+      supplier_id, create_time, operator, 
+      operator_id, paas_id, status, 
+      if_del, t_sla_list_id, url)
+    values (#{id,jdbcType=INTEGER}, #{project,jdbcType=VARCHAR}, #{projectId,jdbcType=VARCHAR}, 
+      #{serviceName,jdbcType=VARCHAR}, #{serviceId,jdbcType=VARCHAR}, #{outageEndDate,jdbcType=TIMESTAMP}, 
+      #{outageStartDate,jdbcType=TIMESTAMP}, #{outageTime,jdbcType=INTEGER}, #{ifOvertime,jdbcType=CHAR}, 
+      #{ifNotRun,jdbcType=CHAR}, #{deductScore,jdbcType=INTEGER}, #{lostMoney,jdbcType=DOUBLE}, 
+      #{cutPayment,jdbcType=INTEGER}, #{outageConfirmDate,jdbcType=TIMESTAMP}, #{supplier,jdbcType=VARCHAR}, 
+      #{supplierId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, 
+      #{operatorId,jdbcType=VARCHAR}, #{paasId,jdbcType=INTEGER}, #{status,jdbcType=CHAR}, 
+      #{ifDel,jdbcType=CHAR}, #{tSlaListId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.generator.TSlaOutage" >
+    insert into t_sla_outage
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="project != null" >
+        project,
+      </if>
+      <if test="projectId != null" >
+        project_id,
+      </if>
+      <if test="serviceName != null" >
+        service_name,
+      </if>
+      <if test="serviceId != null" >
+        service_id,
+      </if>
+      <if test="outageEndDate != null" >
+        outage_end_date,
+      </if>
+      <if test="outageStartDate != null" >
+        outage_start_date,
+      </if>
+      <if test="outageTime != null" >
+        outage_time,
+      </if>
+      <if test="ifOvertime != null" >
+        if_overtime,
+      </if>
+      <if test="ifNotRun != null" >
+        if_not_run,
+      </if>
+      <if test="deductScore != null" >
+        deduct_score,
+      </if>
+      <if test="lostMoney != null" >
+        lost_money,
+      </if>
+      <if test="cutPayment != null" >
+        cut_payment,
+      </if>
+      <if test="outageConfirmDate != null" >
+        outage_confirm_date,
+      </if>
+      <if test="supplier != null" >
+        supplier,
+      </if>
+      <if test="supplierId != null" >
+        supplier_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="paasId != null" >
+        paas_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="ifDel != null" >
+        if_del,
+      </if>
+      <if test="tSlaListId != null" >
+        t_sla_list_id,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="project != null" >
+        #{project,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null" >
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null" >
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null" >
+        #{serviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="outageEndDate != null" >
+        #{outageEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="outageStartDate != null" >
+        #{outageStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="outageTime != null" >
+        #{outageTime,jdbcType=INTEGER},
+      </if>
+      <if test="ifOvertime != null" >
+        #{ifOvertime,jdbcType=CHAR},
+      </if>
+      <if test="ifNotRun != null" >
+        #{ifNotRun,jdbcType=CHAR},
+      </if>
+      <if test="deductScore != null" >
+        #{deductScore,jdbcType=INTEGER},
+      </if>
+      <if test="lostMoney != null" >
+        #{lostMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="cutPayment != null" >
+        #{cutPayment,jdbcType=INTEGER},
+      </if>
+      <if test="outageConfirmDate != null" >
+        #{outageConfirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="supplier != null" >
+        #{supplier,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null" >
+        #{supplierId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="paasId != null" >
+        #{paasId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="ifDel != null" >
+        #{ifDel,jdbcType=CHAR},
+      </if>
+      <if test="tSlaListId != null" >
+        #{tSlaListId,jdbcType=BIGINT},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.generator.TSlaOutage" >
+    update t_sla_outage
+    <set >
+      <if test="project != null" >
+        project = #{project,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null" >
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null" >
+        service_name = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null" >
+        service_id = #{serviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="outageEndDate != null" >
+        outage_end_date = #{outageEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="outageStartDate != null" >
+        outage_start_date = #{outageStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="outageTime != null" >
+        outage_time = #{outageTime,jdbcType=INTEGER},
+      </if>
+      <if test="ifOvertime != null" >
+        if_overtime = #{ifOvertime,jdbcType=CHAR},
+      </if>
+      <if test="ifNotRun != null" >
+        if_not_run = #{ifNotRun,jdbcType=CHAR},
+      </if>
+      <if test="deductScore != null" >
+        deduct_score = #{deductScore,jdbcType=INTEGER},
+      </if>
+      <if test="lostMoney != null" >
+        lost_money = #{lostMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="cutPayment != null" >
+        cut_payment = #{cutPayment,jdbcType=INTEGER},
+      </if>
+      <if test="outageConfirmDate != null" >
+        outage_confirm_date = #{outageConfirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="supplier != null" >
+        supplier = #{supplier,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null" >
+        supplier_id = #{supplierId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="paasId != null" >
+        paas_id = #{paasId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="ifDel != null" >
+        if_del = #{ifDel,jdbcType=CHAR},
+      </if>
+      <if test="tSlaListId != null" >
+        t_sla_list_id = #{tSlaListId,jdbcType=BIGINT},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.generator.TSlaOutage" >
+    update t_sla_outage
+    set project = #{project,jdbcType=VARCHAR},
+      project_id = #{projectId,jdbcType=VARCHAR},
+      service_name = #{serviceName,jdbcType=VARCHAR},
+      service_id = #{serviceId,jdbcType=VARCHAR},
+      outage_end_date = #{outageEndDate,jdbcType=TIMESTAMP},
+      outage_start_date = #{outageStartDate,jdbcType=TIMESTAMP},
+      outage_time = #{outageTime,jdbcType=INTEGER},
+      if_overtime = #{ifOvertime,jdbcType=CHAR},
+      if_not_run = #{ifNotRun,jdbcType=CHAR},
+      deduct_score = #{deductScore,jdbcType=INTEGER},
+      lost_money = #{lostMoney,jdbcType=DOUBLE},
+      cut_payment = #{cutPayment,jdbcType=INTEGER},
+      outage_confirm_date = #{outageConfirmDate,jdbcType=TIMESTAMP},
+      supplier = #{supplier,jdbcType=VARCHAR},
+      supplier_id = #{supplierId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      operator = #{operator,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=VARCHAR},
+      paas_id = #{paasId,jdbcType=INTEGER},
+      status = #{status,jdbcType=CHAR},
+      if_del = #{ifDel,jdbcType=CHAR},
+      t_sla_list_id = #{tSlaListId,jdbcType=BIGINT},
+      url = #{url,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
