@@ -1,0 +1,2 @@
+1.SELECT IF(Col IS NULL,'a','b') FROM Table
+  SELECT IF(Col IS NOT NULL,'a','b') FROM Table

@@ -1,0 +1,65 @@
+/** 
+     * 根据页面用户输入的信息形成 Answer 对象的List 
+     *  
+     * @param answers 
+     * @param question_ids 
+     * @param types 
+     * @return 
+     */  
+    private List<Answer> toAnswerList(String[] studenAnswers, int[] question_ids,  
+            int[] types,int[] scores) {  
+        List<Answer> answerList = new ArrayList<Answer>();  
+          
+        if(studenAnswers!=null && question_ids!= null && types!= null&& scores!= null){  
+            for (int i = 0; i < studenAnswers.length; i++) {  
+                  
+                Answer answer = new Answer();  
+                String studenAnswer = studenAnswers[i];  
+                int type = types[i];  
+                int question_id = question_ids[i];  
+                int score = scores[i];  
+          
+                  
+                answer.setQuestion_id(question_id);  
+                answer.setScore(score);  
+                answer.setStudenAnswer(studenAnswer);  
+                answer.setType(type);  
+                  
+                answerList.add(answer);  
+            }  
+        }  
+        return answerList;  
+    }  
+  
+    /** 
+     * 将一个json字串转为list 
+     * @param props 
+     * @return 
+     */  
+    public static List<Answer> converAnswerFormString(String answer){  
+        if (answer == null || answer.equals(""))  
+            return new ArrayList();  
+  
+        JSONArray jsonArray = JSONArray.fromObject(answer);  
+        List<Answer> list = (List) JSONArray.toCollection(jsonArray,  
+                Answer.class);  
+          
+        return list;  
+    }  
+      
+    /** 
+     *  
+     * 将一个 Answer 对象的List 生成Json字串 
+     * 是根据客户端页面用户输入的信息生成的 
+     *  
+     *  
+     */  
+    public String getAnswerString(String[] studenAnswers, int[] question_ids,  
+            int[] types,int[] scores) {  
+        List list = toAnswerList(studenAnswers,  question_ids,  
+                 types, scores);  
+        JSONArray jsonarray = JSONArray.fromObject(list);  
+  
+        return jsonarray.toString();  
+    }  
+      

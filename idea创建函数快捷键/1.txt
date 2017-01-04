@@ -1,0 +1,3 @@
+mainº¯Êý£ºpsvm
+forÑ­»·£ºfori+tab¼ü
+System.out.println()£ºsout
