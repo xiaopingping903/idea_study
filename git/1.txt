@@ -1,0 +1,4 @@
+切换地址
+修改了项目下隐藏的.git文件中的config里面的地址
+或者
+git remote set-url origin xxxxxxxx

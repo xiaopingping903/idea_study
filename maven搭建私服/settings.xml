@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+	<!--配置本地maven的maven库，maven下载的jar包，都放到此下面-->
+    <localRepository>E:\repo</localRepository>
+
+ 
+  <pluginGroups>
+ 
+  </pluginGroups>
+
+
+  <proxies>
+ 
+  </proxies>
+<!--配置链接nexus的用户名密码信息，在servers标签中间配置-->
+<!--注：此处的用户名，密码，就是你nexus的用户名密码，至关重要，否则maven是下载不了jar包的 -->
+  <servers>	
+	<id>nexus</id>  
+      <username>admin</username>  
+      <password>zap123456</password>  
+    </server> 
+	<server>  
+        <id>nexus_snapshots</id>  
+        <username>admin</username>  
+      <password>zap123456</password> 
+    </server> 
+     <server>  
+      <id>nexus_releases</id>  
+      <username>admin</username>  
+      <password>zap123456</password> 
+    </server>
+  </servers>
+<!--这里的id，要跟servers里面配置的id一致，否则连不上，这个配置好后，就会从这里下载jar包了-->
+  <mirrors>
+	<mirror>   
+      <id>nexus</id>   
+      <mirrorOf>*</mirrorOf>   
+      <url>http://localhost:8081/nexus/content/groups/public</url>   
+    </mirror>  
+    <mirror>   
+      <id>nexus-snapshots</id>   
+      <mirrorOf>*</mirrorOf>   
+      <url>http://localhost:8081/nexus/content/repositories/snapshots</url>   
+    </mirror> 
+    <mirror>   
+      <id>nexus_releases</id>   
+      <mirrorOf>*</mirrorOf>   
+      <url>http://localhost:8081/nexus/content/repositories/releases</url>   
+    </mirror> 
+  </mirrors>
+  <profiles>
+  
+  </profiles>
+
+
+</settings>
