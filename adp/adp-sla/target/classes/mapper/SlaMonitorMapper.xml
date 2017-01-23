@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaMonitorDAO" >
+<resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaMonitorDTO" >
+  <id column="id" property="id" jdbcType="INTEGER" />
+  <result column="alm_short_name" property="almShortName" jdbcType="VARCHAR" />
+  <result column="alm_application_id" property="almApplicationId" jdbcType="VARCHAR" />
+  <result column="project_id" property="projectId" jdbcType="VARCHAR" />
+  <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+  <result column="app_name" property="appName" jdbcType="VARCHAR" />
+  <result column="invoked_total" property="invokedTotal" jdbcType="INTEGER" />
+  <result column="invoked_success_total" property="invokedSuccessTotal" jdbcType="INTEGER" />
+  <result column="invoked_fail_total" property="invokedFailTotal" jdbcType="INTEGER" />
+  <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  <result column="monitor_date" property="monitorDate" jdbcType="DATE" />
+  <result column="operator" property="operator" jdbcType="VARCHAR" />
+  <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+  <result column="paas_id" property="paasId" jdbcType="INTEGER" />
+  <result column="status" property="status" jdbcType="CHAR" />
+  <result column="if_del" property="ifDel" jdbcType="CHAR" />
+  <result column="t_sla_list_id" property="tSlaListId" jdbcType="BIGINT" />
+  <result column="url" property="url" jdbcType="VARCHAR" />
+  <result column="operator_time" property="operatorTime" jdbcType="TIMESTAMP" />
+  <result column="remark1" property="remark1" jdbcType="VARCHAR" />
+  <result column="remark2" property="remark2" jdbcType="VARCHAR" />
+  <result column="assess_status" property="assessStatus" jdbcType="VARCHAR"/>
+  <result column="cancel_assess_reason" property="cancelAssessReason"/>
+</resultMap>
+<sql id="Base_Column_List" >
+  id, alm_short_name,alm_application_id,project_id,project_name, app_name, invoked_total, invoked_success_total, invoked_fail_total,
+  create_time, monitor_date, operator, operator_id, paas_id, status, if_del,
+  t_sla_list_id, url,operator_time,remark1, remark2,assess_status,cancel_assess_reason
+</sql>
+<select id="getSlaMonitor" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  select
+  <include refid="Base_Column_List" />
+  from t_sla_monitor
+  where id = #{id,jdbcType=INTEGER}
+</select>
+<select id="getSlaMonitorList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  select
+  <include refid="Base_Column_List" />
+  from t_sla_monitor
+  where 1=1
+  <if test="fromDate != null">
+    and monitor_date &gt;= #{fromDate}
+  </if>
+  <if test="toDate != null">
+    and monitor_date &lt;= #{toDate}
+  </if>
+  <if test="projectName != null">
+  and project_name like CONCAT('%',#{projectName},'%')
+</if>
+  <if test="tSlaListId != null">
+    and t_sla_list_id = #{tSlaListId}
+  </if>
+  <if test="almShortName != null">
+    and alm_short_name = #{almShortName}
+  </if>
+  <if test="almApplicationId != null">
+    and alm_application_id = #{almApplicationId}
+  </if>
+  <if test="fromDate != null">
+    and monitor_date &gt;= #{fromDate}
+  </if>
+  <if test="toDate != null">
+    and monitor_date &lt;= #{toDate}
+  </if>
+  <if test="pageSize!=null and startNo!=null">
+    limit #{startNo},#{pageSize}
+  </if>
+</select>
+<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  delete from t_sla_monitor
+  where id = #{id,jdbcType=INTEGER}
+</delete>
+<insert id="insert" parameterType="com.haier.adp.sla.dto.SlaMonitorDTO" keyProperty="id" useGeneratedKeys="true" >
+  insert into t_sla_monitor (id, alm_short_name,alm_application_id,project_id,project_name,app_name,
+  invoked_total, invoked_success_total, invoked_fail_total,
+  create_time, monitor_date, operator,
+  operator_id, paas_id, status,
+  if_del,t_sla_list_id,
+  url,
+  operator_time, remark1, remark2,assess_status,cancel_assess_reason
+  )
+  values (#{id,jdbcType=INTEGER}, #{almShortName,jdbcType=VARCHAR}, #{almApplicationId,jdbcType=VARCHAR},#{projectId,jdbcType=VARCHAR}, #{projectName,jdbcType=VARCHAR},  #{appName,jdbcType=VARCHAR},
+  #{invokedTotal,jdbcType=INTEGER}, #{invokedSuccessTotal,jdbcType=INTEGER}, #{invokedFailTotal,jdbcType=INTEGER},
+  #{createTime,jdbcType=TIMESTAMP}, #{monitorDate,jdbcType=DATE}, #{operator,jdbcType=VARCHAR},
+  #{operatorId,jdbcType=VARCHAR}, #{paasId,jdbcType=INTEGER}, #{status,jdbcType=CHAR},
+  #{ifDel,jdbcType=CHAR}, #{tSlaListId,jdbcType=BIGINT},
+  #{url,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{remark1,jdbcType=LONGVARCHAR}, #{remark2,jdbcType=LONGVARCHAR}
+  ,#{assessStatus,jdbcType=CHAR},#{cancelAssessReason,jdbcType=VARCHAR}
+  )
+</insert>
+
+<select id="getPercent" parameterType="java.util.Map" resultMap="BaseResultMap" >
+  SELECT SUM(t.invoked_total) AS invoked_total,SUM(t.invoked_success_total) AS invoked_success_total,SUM(t.invoked_fail_total) AS invoked_fail_total FROM t_sla_monitor  t
+  where 1=1
+  <if test="fromDate != null">
+    and monitor_date &gt;= #{fromDate}
+  </if>
+  <if test="toDate != null">
+    and monitor_date &lt;= #{toDate}
+  </if>
+  <if test="projectName != null">
+    and project_name = #{projectName}
+  </if>
+  <if test="tSlaListId != null">
+    and t_sla_list_id = #{tSlaListId}
+  </if>
+  <if test="almShortName != null">
+    and alm_short_name = #{almShortName}
+  </if>
+  <if test="almApplicationId != null">
+    and alm_application_id = #{almApplicationId}
+  </if>
+</select>
+
+<update id="updateMonitorData" parameterType="com.haier.adp.sla.dto.SlaMonitorDTO">
+  update t_sla_monitor
+  <set>
+    <if test="cancelAssessReason != null">
+      cancel_assess_reason = #{cancelAssessReason,jdbcType=VARCHAR},
+    </if>
+    <if test="operatorTime != null">
+      operator_time = #{operatorTime,jdbcType=VARCHAR},
+    </if>
+    <if test="operator != null">
+      operator = #{operator,jdbcType=VARCHAR},
+    </if>
+    <if test="operatorId != null">
+      operator_id = #{operatorId,jdbcType=VARCHAR},
+    </if>
+    <if test="status != null">
+      status = #{status,jdbcType=CHAR},
+    </if>
+    <if test="assessStatus != null">
+      assess_status = #{assessStatus,jdbcType=CHAR}
+    </if>
+  </set>
+  where id = #{id,jdbcType=INTEGER}
+</update>
+<update id="updateSlaListId" parameterType="com.haier.adp.sla.dto.SlaMonitorDTO">
+  update t_sla_monitor
+  <set>
+    <if test="tSlaListId != null">
+      t_sla_list_id = #{tSlaListId,jdbcType=VARCHAR},
+    </if>
+  </set>
+  where 1 = 1
+  <if test="queryStartDate != null">
+    and monitor_date &gt;= #{queryStartDate}
+  </if>
+  <if test="queryEndDate != null">
+    and monitor_date &lt;= #{queryEndDate}
+  </if>
+  <if test="almShortName != null">
+    and alm_short_name = #{almShortName}
+  </if>
+</update>
+<select id="getSupplierByMonitor" parameterType="java.util.Map" resultType="com.haier.adp.sla.dto.SlaSupplierDTO">
+  SELECT IF(m.b_id IS NOT NULL,1,0) AS selected,m.supplier,m.supplier_id as supplierId FROM (SELECT a.supplier,a.supplier_id,b.b_id FROM(SELECT supplier,supplier_id FROM t_sla_supplier WHERE
+  project_name=#{projectName}) a
+  LEFT JOIN
+  (SELECT supplier,supplier_id AS b_id FROM t_sla_outage_supplier_relation WHERE t_sla_monitor_id=#{id}) b ON a.supplier_id=b.b_id) m
+</select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dto.SlaProjectRelDTO">
+    <resultMap id="slaProjectRelDTO" type="com.haier.adp.sla.dto.SlaProjectRelDTO">
+        <id column="id" property="id"/>
+        <result column="list_id" property="listId"/>
+        <result column="project_name" property="projectName"/>
+    </resultMap>
+
+    <sql id="table">
+        `sla_project_rel`
+    </sql>
+
+    <sql id="columns">
+        `list_id`,`project_name`
+    </sql>
+    <sql id="values">
+        #{listId},#{projectName}
+    </sql>
+
+    <insert id="insertSlaProjectRel" parameterType="com.haier.adp.sla.dto.SlaProjectRelDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="search" parameterType="com.haier.adp.sla.dto.SlaProjectRelDTO" resultMap="slaProjectRelDTO">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+        <where>
+            <if test="listId != null">
+                and list_id = #{listId}
+            </if>
+        </where>
+    </select>
+    <select id="queryCount" parameterType="com.haier.adp.sla.dto.SlaProjectRelDTO" resultType="int">
+        select count(*)
+        FROM
+        <include refid="table"/>
+        <where>
+            <if test="listId != null">
+                and list_id = #{listId}
+            </if>
+        </where>
+    </select>
+</mapper>

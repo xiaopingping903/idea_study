@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.kpi.dto.PPQAInfo">
+    <resultMap id="ppqa" type="com.haier.adp.kpi.dto.PPQAInfo">
+        <id column="id" property="id"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="score" property="score"/>
+        <result column="author_name" property="authorName"/>
+    </resultMap>
+
+    <sql id="table">
+        `ppqa`
+    </sql>
+
+    <sql id="columns">
+        `start_date`,`end_date`,`score`,`author_name`
+    </sql>
+    <sql id="values">
+        #{startDate},#{endDate},#{score},#{authorName}
+    </sql>
+
+
+    <insert id="create" parameterType="com.haier.adp.kpi.dto.PPQAInfo" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="search" parameterType="com.haier.adp.kpi.dto.PPQASearchCondition" resultMap="ppqa">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+        <where>
+            <if test="startDate != null">
+                'start_date' &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                'end_date' &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="isLaterThanEndDate" parameterType="Date" resultType="Long">
+        select count(1) from
+        <include refid="table"/>
+        where end_date &gt;= #{startDate}
+    </select>
+
+    <select id="isEalierThanStartDate" parameterType="Date" resultType="Long">
+        select count(1) from
+        <include refid="table"/>
+        where start_date &lt;= #{endDate}
+    </select>
+</mapper>

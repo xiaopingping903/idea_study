@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaOutageSupplierRelationDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaOutageSupplierRelationDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+    <result column="supplier" property="supplier" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="t_sla_outage_id" property="tSlaOutageId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="CHAR" />
+    <result column="t_sla_monitor_id" property="tSlaMonitorId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+   supplier_id, supplier
+  </sql>
+  <select id="getOutageSupplierRelationList" resultMap="BaseResultMap"  parameterType="com.haier.adp.sla.dto.SlaOutageSupplierRelationDTO">
+    select
+    <include refid="Base_Column_List" />
+    from t_sla_outage_supplier_relation
+    where 1=1
+    <if test="type==1 and tSlaOutageId!=null">
+    and t_sla_outage_id=#{tSlaOutageId,jdbcType=VARCHAR}
+    </if>
+    <if test="type==2 and tSlaMonitorId!=null">
+      and t_sla_monitor_id=#{tSlaMonitorId,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <insert id="insertOutageSupplierRelation" parameterType="com.haier.adp.sla.dto.SlaOutageSupplierRelationDTO" keyProperty="id" useGeneratedKeys="true">
+     INSERT INTO t_sla_outage_supplier_relation (`id`, `supplier_id`, `supplier`,`create_time`,`t_sla_outage_id`,`type`,`t_sla_monitor_id`) VALUES
+     (#{id},#{supplierId},#{supplier},#{createTime},#{tSlaOutageId},#{type},#{tSlaMonitorId})
+  </insert>
+  <delete id="deleteOutageSupplierRelation" parameterType="com.haier.adp.sla.dto.SlaOutageSupplierRelationDTO">
+    delete from t_sla_outage_supplier_relation where 1=1
+    <if test="type==1 and tSlaOutageId!=null">
+      and t_sla_outage_id=#{tSlaOutageId,jdbcType=VARCHAR}
+    </if>
+    <if test="type==2 and tSlaMonitorId!=null">
+      and t_sla_monitor_id=#{tSlaMonitorId,jdbcType=VARCHAR}
+    </if>
+  </delete>
+</mapper>

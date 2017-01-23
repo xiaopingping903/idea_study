@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.PaasOutageDAO">
+    <resultMap id="otdList" type="com.haier.adp.sla.dto.PaasOutageDTO">
+        <id column="id" property="id"/>
+        <result column="appName" property="appName"/>
+        <result column="appId" property="appId"/>
+        <result column="serviceName" property="serviceName"/>
+        <result column="containerId" property="containerId"/>
+        <result column="downtimeEnd" property="downtimeEnd"/>
+        <result column="downtimeBegin" property="downtimeBegin"/>
+        <result column="downtimeDelay" property="downtimeDelay"/>
+        <result column="health" property="health"/>
+        <result column="date" property="date"/>
+    </resultMap>
+
+    <select id="getPaasOutageList" parameterType="java.util.Map" resultMap="otdList">
+      <if test="type==0">
+          SELECT n.app_id,n.app_name,n.service_name,COUNT(1) FROM (
+      </if>
+        <if test="type==1">
+
+            SELECT n.downtime_begin,n.downtime_end FROM (
+        </if>
+       SELECT * FROM death_note WHERE service_name
+        IN
+        (SELECT m.service_name FROM (
+        SELECT t.service_name,COUNT(1) num FROM (SELECT service_name,health,COUNT(1) AS num
+        FROM death_note where downtime_begin&gt;=#{time_s} and downtime_end&lt;=#{timeE}
+        GROUP BY service_name,health) t GROUP BY t.service_name ) m WHERE
+        m.num=1) AND health=1 ORDER BY service_name
+        <if test="type==0">
+            ) n GROUP BY n.app_id,n.app_name,n.service_name
+        </if>
+        <if test="type==1">
+            ) n WHERE n.service_name=#{serviceName,jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>

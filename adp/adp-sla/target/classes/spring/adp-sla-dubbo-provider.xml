@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- sla outage-->
+    <bean id="slaOutageService" class="com.haier.adp.sla.service.SlaOutageServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaOutageService" version="1.0" ref="slaOutageService"  retries="0"/>
+    <!-- sla monitor -->
+    <bean id="slaMonitorService" class="com.haier.adp.sla.service.SlaMonitorServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaMonitorService" version="1.0" ref="slaMonitorService" retries="0"/>
+    <!-- sla services -->
+    <bean id="slaOTDService" class="com.haier.adp.sla.service.SlaOTDServiceImpl"></bean>
+    <dubbo:service retries="0" interface="com.haier.adp.sla.service.SlaOTDService"  version="1.0" ref="slaOTDService"/>
+
+    <!-- sla bug services -->
+    <bean id="slaBugInfoService" class="com.haier.adp.sla.service.SlaBugInfoServiceImpl"></bean>
+    <dubbo:service retries="0" interface="com.haier.adp.sla.service.SlaBugInfoService"  version="1.0" ref="slaBugInfoService"/>
+
+    <!-- sla bug services -->
+    <bean id="slaProjectRelService" class="com.haier.adp.sla.service.SlaProjectRelServiceImpl"></bean>
+    <dubbo:service retries="0" interface="com.haier.adp.sla.service.SlaProjectRelService"  version="1.0" ref="slaProjectRelService"/>
+    <!--  -->
+    <bean id="slaProjectInfoService" class="com.haier.adp.sla.service.SlaProjectInfoServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaProjectInfoService" retries="0" version="1.0" ref="slaProjectInfoService"/>
+    <!-- 提供给alm的接口services-->
+    <bean id="slaInterfaceService" class="com.haier.adp.sla.service.SlaInterfaceServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaInterfaceService" retries="0" version="1.0" ref="slaInterfaceService"/>
+</beans>

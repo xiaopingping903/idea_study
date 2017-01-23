@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: adp-web
+dubbo:
+  name: adp-web

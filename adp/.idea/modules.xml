@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/adp.iml" filepath="$PROJECT_DIR$/adp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-common/adp-common.iml" filepath="$PROJECT_DIR$/adp-common/adp-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-config/adp-config.iml" filepath="$PROJECT_DIR$/adp-config/adp-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-config-api/adp-config-api.iml" filepath="$PROJECT_DIR$/adp-config-api/adp-config-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-kpi/adp-kpi.iml" filepath="$PROJECT_DIR$/adp-kpi/adp-kpi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-kpi-api/adp-kpi-api.iml" filepath="$PROJECT_DIR$/adp-kpi-api/adp-kpi-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-sla/adp-sla.iml" filepath="$PROJECT_DIR$/adp-sla/adp-sla.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-sla-api/adp-sla-api.iml" filepath="$PROJECT_DIR$/adp-sla-api/adp-sla-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-test/adp-test.iml" filepath="$PROJECT_DIR$/adp-test/adp-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-web/adp-web.iml" filepath="$PROJECT_DIR$/adp-web/adp-web.iml" />
+    </modules>
+  </component>
+</project>

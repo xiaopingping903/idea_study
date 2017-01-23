@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dto.SlaDetailDTO">
+    <resultMap id="slaDetail" type="com.haier.adp.sla.dto.SlaDetailDTO">
+        <id column="id" property="id"/>
+        <result column="list_id" property="listId"/>
+        <result column="jira_epic_id" property="jiraEpicId"/>
+        <result column="jira_story_id" property="jiraStoryId"/>
+        <result column="alm_request_id" property="almRequestId"/>
+        <result column="alm_task_id" property="almTaskId"/>
+        <result column="if_on_time" property="ifOnTime"/>
+        <result column="request_plan_date" property="requestPlanDate"/>
+        <result column="request_actual_date" property="requestActualDate"/>
+        <result column="apply_PD" property="applyPD"/>
+        <result column="delay_days" property="delayDays"/>
+        <result column="assign_person" property="assignPerson"/>
+        <result column="cut_points" property="cutPoints"/>
+        <result column="cut_payment" property="cutPayment"/>
+        <result column="if_paid" property="ifPaid"/>
+        <result column="type" property="type"/>
+        <result column="task_desc" property="taskDesc"/>
+        <result column="project_name" property="projectName"/>
+    </resultMap>
+
+    <sql id="table">
+        `t_sla_detail`
+    </sql>
+
+    <sql id="columns">
+        `list_id`,`jira_epic_id`,`jira_story_id`,`alm_request_id`,`alm_task_id`,`if_on_time`,`request_plan_date`,
+        `request_actual_date`,`apply_PD`,`delay_days`,`assign_person`,`cut_points`,`cut_payment`,`if_paid`,`type`,`task_desc`,`project_name`
+    </sql>
+    <sql id="values">
+        #{listId},#{jiraEpicId},#{jiraStoryId},#{almRequestId},#{almTaskId},#{ifOnTime},#{requestPlanDate},
+        #{requestActualDate},#{applyPD},#{delayDays},#{assignPerson},#{cutPoints},#{cutPayment},#{ifPaid},#{type},#{taskDesc},#{projectName}
+    </sql>
+
+    <insert id="insertDetailData" parameterType="com.haier.adp.sla.dto.SlaDetailDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="search" parameterType="com.haier.adp.sla.dto.SlaDetailDTO" resultMap="slaDetail">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+        <where>
+            1 = 1
+            <if test="listId != null">
+                and list_id = #{listId}
+            </if>
+            <if test="almTaskId != null">
+                and alm_task_id in
+                <foreach collection = "almTaskId" item = "item" open = "(" separator = "," close = ")" >
+                    #{item}
+                </foreach >
+            </if>
+        </where>
+    </select>
+    <select id="queryCount" parameterType="com.haier.adp.sla.dto.SlaDetailDTO" resultType="int">
+        select count(*)
+        FROM
+        <include refid="table"/>
+        <where>
+            <if test="listId != null">
+                and list_id = #{listId}
+            </if>
+            <if test="almRequestId != null">
+                and alm_request_id = #{almRequestId}
+            </if>
+        </where>
+    </select>
+    <update id="updateListIdForDetailData" parameterType="com.haier.adp.sla.dto.SlaDetailDTO">
+        update t_sla_detail
+        <set>
+            <if test="listId != null">list_id = #{listId,jdbcType=CHAR}
+            </if>
+        </set>
+        where binary alm_task_id = #{almTaskId,jdbcType=CHAR}
+    </update>
+</mapper>

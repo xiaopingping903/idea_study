@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaProjectInfoDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaProjectInfoDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="alm_short_name" property="almShortName" jdbcType="VARCHAR" />
+    <result column="alm_application_id" property="almApplicationId" jdbcType="VARCHAR" />
+    <result column="project_id" property="projectId" jdbcType="VARCHAR" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, alm_short_name,alm_application_id,project_id,project_name
+  </sql>
+  <select id="getSlaProjectInfoList" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select
+    <include refid="Base_Column_List" />
+    from t_sla_project_info
+    where 1=1
+    <if test="projectName!=null">
+    and project_name=#{projectName}
+    </if>
+  </select>
+  <insert id="insertSlaProjectInfo" parameterType="com.haier.adp.sla.dto.SlaProjectInfoDTO" keyProperty="id" useGeneratedKeys="true">
+    insert into t_sla_project_info(id,alm_short_name,alm_application_id,project_id,project_name) VALUES
+    (#{id},#{almShortName},#{almApplicationId},#{projectId},#{projectName})
+  </insert>
+  <delete id="delProjectInfo">
+    delete from t_sla_project_info
+  </delete>
+</mapper>

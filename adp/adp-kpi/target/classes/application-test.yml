@@ -1,0 +1,28 @@
+dubbo:
+  name: adp-kpi-service
+  registry: zookeeper://10.138.8.62:2181
+  port: -1
+  timeout: 10000
+  threads: 100
+  heart-beats: 10000
+
+datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.138.8.63:3306/adp?useUnicode=true&characterEncoding=UTF8
+  username: root
+  password: root
+
+mybatis:
+  type-aliases-package: com.haier.adp.kpi.model
+  mapper-locations: classpath*:mapper/*Mapper.xml
+
+
+
+
+logging:
+  file: ${user.home}/log/adp/kpi.log
+  level.*: DEBUG
+
+zookeeper:
+  host: 10.138.8.62
+  port: 2181

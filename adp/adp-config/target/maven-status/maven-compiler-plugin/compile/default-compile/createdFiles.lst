@@ -1,0 +1,4 @@
+com\haier\adp\config\autoconfig\LinkConfigAutoConfiguration.class
+com\haier\adp\config\dao\ConfigDao.class
+com\haier\adp\config\Application.class
+com\haier\adp\config\service\ConfigReadServiceImpl.class

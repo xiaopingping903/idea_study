@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dto.SlaListDTO">
+    <resultMap id="otdList" type="com.haier.adp.sla.dto.SlaListDTO">
+        <id column="id" property="id"/>
+        <result column="contract_stage_desc" property="contractStageDesc"/>
+        <result column="stage_begin_date" property="stageBeginDate"/>
+        <result column="stage_end_date" property="stageEndDate"/>
+        <result column="report_create_date" property="reportCreateDate"/>
+        <result column="score" property="score"/>
+        <result column="cut_payment" property="cutPayment"/>
+        <result column="project_name" property="projectName"/>
+        <result column="type" property="type"/>
+        <result column="if_paid" property="ifPaid"/>
+        <result column="if_shown" property="ifShown"/>
+        <result column="task_id" property="taskId"/>
+    </resultMap>
+    <sql id="table">
+        `t_sla_list`
+    </sql>
+    <sql id="columns">
+        `contract_stage_desc`,`stage_begin_date`,`stage_end_date`,`report_create_date`,
+        `score`,`cut_payment`,`project_name`,`type`,`if_paid`,`if_shown`,`task_id`
+    </sql>
+    <sql id="join_columns">
+        `contract_stage_desc`,`stage_begin_date`,`stage_end_date`,`report_create_date`,
+        `score`,`cut_payment`,tsl.`project_name`,`type`,`if_paid`,`if_shown`,`task_id`
+    </sql>
+    <sql id="values">
+        #{contractStageDesc},#{stageBeginDate},#{stageEndDate},#{reportCreateDate},
+        #{score},#{cutPayment},#{projectName},#{type},#{ifPaid},#{ifShown},#{taskId}
+    </sql>
+
+    <insert id="insertListData" parameterType="com.haier.adp.sla.dto.SlaListDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="search" parameterType="com.haier.adp.sla.dto.SlaListDTO" resultMap="otdList">
+        select tsl.`id`,
+        <include refid="join_columns"/>
+        FROM
+        t_sla_list tsl
+        LEFT JOIN sla_project_rel spr
+        on tsl.id = spr.list_id
+        <where>
+            <if test="id != null and id != ''">
+                and tsl.id = #{id,jdbcType=DECIMAL}
+            </if>
+            <if test="queryStartDate != null">
+                and tsl.report_create_date &gt;= #{queryStartDate}
+            </if>
+            <if test="queryEndDate != null">
+                and tsl.report_create_date &lt;= #{queryEndDate}
+            </if>
+            <if test="contractStageDesc != null and contractStageDesc != ''">
+                and tsl.contract_stage_desc like '%'||#{contractStageDesc,jdbcType=VARCHAR}||'%'
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and spr.project_name = #{projectName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        limit #{startNo,jdbcType=DECIMAL},#{pageSize,jdbcType=DECIMAL}
+    </select>
+    <select id="queryCount" parameterType="com.haier.adp.sla.dto.SlaListDTO" resultType="int">
+        select count(*)
+        FROM
+        t_sla_list tsl
+        LEFT JOIN sla_project_rel spr
+        on tsl.id = spr.list_id
+        <where>
+            <if test="queryStartDate != null">
+                and tsl.report_create_date &gt;= #{queryStartDate}
+            </if>
+            <if test="queryEndDate != null">
+                and tsl.report_create_date &lt;= #{queryEndDate}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and spr.project_name = #{projectName,jdbcType=VARCHAR}
+            </if>
+            <if test="contractStageDesc != null and contractStageDesc != ''">
+                and tsl.contract_stage_desc like '%'||#{contractStageDesc,jdbcType=VARCHAR}||'%'
+            </if>
+        </where>
+    </select>
+    <update id="updateListPaidStatus" parameterType="com.haier.adp.sla.dto.SlaListDTO">
+        update t_sla_list
+        <set>
+            <if test="ifPaid != null">if_paid = #{ifPaid,jdbcType=BOOLEAN}
+            </if>
+        </set>
+        where taskId = #{taskId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateListShownStatus" parameterType="com.haier.adp.sla.dto.SlaListDTO">
+        update t_sla_list
+        <set>
+            <if test="ifShown != null">if_shown = #{ifShown,jdbcType=BOOLEAN}
+            </if>
+        </set>
+        where id = #{id,jdbcType=DECIMAL}
+    </update>
+</mapper>

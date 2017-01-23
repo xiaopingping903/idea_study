@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaOutageDAO">
+    <resultMap id="otdList" type="com.haier.adp.sla.dto.SlaOutageDTO">
+        <id column="id" property="id"/>
+        <result column="alm_short_name" property="almShortName" jdbcType="VARCHAR" />
+        <result column="alm_application_id" property="almApplicationId" jdbcType="VARCHAR" />
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="project_id" property="projectId" jdbcType="VARCHAR"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="service_id" property="serviceId" jdbcType="VARCHAR"/>
+        <result column="outage_end_date" property="outageEndDate" jdbcType="TIMESTAMP"/>
+        <result column="outage_start_date" property="outageStartDate" jdbcType="TIMESTAMP"/>
+        <result column="outage_time" property="outageTime" jdbcType="INTEGER"/>
+        <result column="if_overtime" property="ifOvertime" jdbcType="CHAR"/>
+        <result column="if_not_run" property="ifNotRun" jdbcType="CHAR"/>
+        <result column="deduct_score" property="deductScore" jdbcType="INTEGER"/>
+        <result column="lost_money" property="lostMoney" jdbcType="DOUBLE"/>
+        <result column="cut_payment" property="cutPayment" jdbcType="INTEGER"/>
+        <result column="outage_confirm_date" property="outageConfirmDate" jdbcType="TIMESTAMP"/>
+       <!-- <result column="supplier" property="supplier" jdbcType="VARCHAR"/>
+        <result column="supplier_id" property="supplierId" jdbcType="VARCHAR"/>-->
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="operator" property="operator" jdbcType="VARCHAR"/>
+        <result column="operator_id" property="operatorId" jdbcType="VARCHAR"/>
+        <result column="paas_id" property="paasId" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="CHAR"/>
+        <result column="if_del" property="ifDel" jdbcType="CHAR"/>
+        <result column="t_sla_list_id" property="tSlaListId" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="assess_status" property="assessStatus" jdbcType="VARCHAR"/>
+        <result column="cancel_assess_reason" property="cancelAssessReason"/>
+    </resultMap>
+    <sql id="table">
+        `t_sla_outage`
+    </sql>
+    <sql id="columns">
+        `alm_short_name`,`alm_application_id`,`project_name`,`project_id`,`service_name`,`service_id`,
+        `outage_end_date`,`outage_start_date`,`outage_time`,`if_overtime`,`if_not_run`,`deduct_score`,`lost_money`,`cut_payment`,`outage_confirm_date`,
+        `create_time`,`operator`,`operator_id`,`paas_id`,`status`,`if_del`,`t_sla_list_id`,`url`,`assess_status`,`cancel_assess_reason`
+    </sql>
+    <sql id="values">
+        #{almShortName}, #{almApplicationId},#{projectName},#{projectId},#{serviceName},#{serviceId},
+        #{outageEndDate},#{outageStartDate},#{outageTime},#{ifOvertime},#{ifNotRun},#{deductScore},#{lostMoney},#{cutPayment},#{outageConfirmDate}
+        ,#{createTime},#{operator},#{operatorId},#{paasId},#{status},#{ifDel},#{tSlaListId},#{url},#{assessStatus},#{cancelAssessReason}
+    </sql>
+
+
+    <insert id="insertSlaOutagelData" parameterType="com.haier.adp.sla.dto.SlaOutageDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="getSlaOutageList" parameterType="java.util.Map" resultMap="otdList">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+        where 1=1
+            <if test="fromDate != null">
+                and outage_end_date &gt;= #{fromDate}
+            </if>
+            <if test="toDate != null">
+                and outage_end_date &lt;= #{toDate}
+            </if>
+            <if test="projectName != null">
+                and project_name like CONCAT('%',#{projectName},'%')
+            </if>
+            <if test="tSlaListId != null">
+                and t_sla_list_id = #{tSlaListId}
+            </if>
+            <if test="almShortName != null">
+                and alm_short_name = #{almShortName}
+            </if>
+            <if test="almApplicationId != null">
+                and alm_application_id = #{almApplicationId}
+            </if>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="queryStartDate!=null">
+                and outage_start_date &gt;= #{queryStartDate}
+            </if>
+            <if test="queryEndDate!=null">
+                and outage_start_date &lt;= #{queryEndDate}
+            </if>
+            <if test="pageSize!=null and startNo!=null">
+                limit #{startNo},#{pageSize}
+            </if>
+    </select>
+    <select id="getSlaOutage" parameterType="java.util.Map" resultMap="otdList">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+        where 1=1
+        <if test="id != null">
+            and id = #{id,jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="getSumOutageTime"  resultType="java.lang.Long">
+    SELECT SUM(outage_time) AS num FROM t_sla_outage   where 1=1
+    <if test="fromDate != null">
+        and outage_end_date &gt;= #{fromDate}
+    </if>
+    <if test="toDate != null">
+        and outage_end_date &lt;= #{toDate}
+    </if>
+    <if test="projectName != null">
+        and project_name = #{projectName}
+    </if>
+    <if test="tSlaListId != null">
+        and t_sla_list_id = #{tSlaListId}
+    </if>
+    <if test="almShortName != null">
+        and alm_short_name = #{almShortName}
+    </if>
+    <if test="almApplicationId != null">
+        and alm_application_id = #{almApplicationId}
+    </if>
+</select>
+    <select id="getTotalCutPayment"  resultType="java.lang.Integer">
+        SELECT SUM(cut_payment) AS num FROM t_sla_outage   where 1=1
+        <if test="outage_end_date != null">
+            and outage_end_date &gt;= #{fromDate}
+        </if>
+        <if test="outage_end_date != null">
+            and outage_end_date &lt;= #{toDate}
+        </if>
+        <if test="projectName != null">
+            and project_name = #{projectName}
+        </if>
+        <if test="tSlaListId != null">
+            and t_sla_list_id = #{tSlaListId}
+        </if>
+        <if test="almShortName != null">
+            and alm_short_name = #{almShortName}
+        </if>
+        <if test="almApplicationId != null">
+            and alm_application_id = #{almApplicationId}
+        </if>
+    </select>
+    <update id="updateSlaOutageData" parameterType="com.haier.adp.sla.dto.SlaOutageDTO">
+        update t_sla_outage
+        <set>
+            <if test="cancelAssessReason != null">
+                cancel_assess_reason = #{cancelAssessReason,jdbcType=VARCHAR},
+            </if>
+            <if test="ifNotRun != null">
+                if_not_run = #{ifNotRun,jdbcType=VARCHAR},
+            </if>
+            <if test="outageConfirmDate != null">
+                outage_confirm_date = #{outageConfirmDate,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                operator = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="assessStatus != null">
+                assess_status = #{assessStatus,jdbcType=CHAR},
+            </if>
+            <if test="cutPayment != null">
+                cut_payment = #{cutPayment,jdbcType=INTEGER}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="getSupplierByOutage" parameterType="java.util.Map" resultType="com.haier.adp.sla.dto.SlaSupplierDTO">
+    SELECT IF(m.b_id IS NOT NULL,1,0) AS selected,m.supplier,m.supplier_id as supplierId FROM (SELECT a.supplier,a.supplier_id,b.b_id FROM(SELECT supplier,supplier_id FROM t_sla_supplier WHERE
+    project_name=#{projectName}) a
+    LEFT JOIN
+    (SELECT supplier,supplier_id AS b_id FROM t_sla_outage_supplier_relation WHERE t_sla_outage_id=#{id}) b ON a.supplier_id=b.b_id) m
+    </select>
+    <update id="updateSlaListId" parameterType="com.haier.adp.sla.dto.SlaOutageDTO">
+        update t_sla_outage
+        <set>
+            <if test="tSlaListId != null">
+                t_sla_list_id = #{tSlaListId,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where 1=1
+        <if test="queryStartDate != null">
+            and outage_start_date &gt;= #{queryStartDate}
+        </if>
+        <if test="queryEndDate != null">
+            and outage_start_date &lt;= #{queryEndDate}
+        </if>
+        <if test="almShortName != null">
+            and alm_short_name = #{almShortName}
+        </if>
+    </update>
+</mapper>

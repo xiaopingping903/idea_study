@@ -1,0 +1,41 @@
+dubbo:
+  name: config-service
+  registry: zookeeper://10.138.8.223:2181
+  port: -1
+  timeout: 1000000
+  threads: 100
+  heartBeats: 10000
+
+datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.138.8.83:3306/sla-test?autoReconnect=true&useUnicode=true&characterEncoding=UTF8
+  username: root
+  password: 123456
+  max-active: 10
+  max-idle: 2
+  test-while-idle: true
+  min-evictable-idle-time-millis: 1800000
+  time-between-eviction-runs-millis: 600000
+  test-on-borrow: true
+  validation-query: SELECT 1
+
+mybatis:
+  type-aliases-package: com.haier.link.config.model
+  mapper-locations: classpath*:mapper/*Mapper.xml
+
+# disable flyway default migration
+flyway:
+  enabled: false
+
+redis:
+  cluster: true
+  sentinel-master-name: center
+  sentinel-hosts: 10.138.8.223:26379,10.138.8.224:26479,10.138.8.225:26579
+
+logging:
+  file: /home/haieradmin/log/link/config.log
+  level.*: INFO
+
+zookeeper:
+  host: 10.138.8.223
+  port: 2181

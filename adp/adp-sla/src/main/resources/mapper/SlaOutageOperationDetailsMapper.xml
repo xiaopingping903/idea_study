@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaOutageOperationDetailsDAO">
+    <resultMap id="otdList" type="com.haier.adp.sla.dto.SlaOutageOperationDetailsDTO">
+        <id column="id" property="id"/>
+        <result column="operator" property="operator"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="t_sla_outage_id" property="tSlaOutageId"/>
+        <result column="content" property="content"/>
+        <result column="type" property="type"/>
+        <result column="t_sla_monitor_id" property="tSlaMonitorId"/>
+    </resultMap>
+    <sql id="table">
+        `t_sla_outage_operation_details`
+    </sql>
+    <sql id="columns">
+        `operator`,`operator_id`,`create_time`,`t_sla_outage_id`,
+        `content`,`type`,`t_sla_monitor_id`
+    </sql>
+    <sql id="values">
+        #{operator},#{operatorId},#{createTime},#{tSlaOutageId},
+        #{content},#{type},#{tSlaMonitorId}
+     </sql>
+
+    <insert id="insertSlaOutageOperationDetailsData" parameterType="com.haier.adp.sla.dto.SlaOutageOperationDetailsDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="getSlaOutageOperationDetailsList" parameterType="com.haier.adp.sla.dto.SlaOutageOperationDetailsDTO" resultMap="otdList">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+    </select>
+</mapper>

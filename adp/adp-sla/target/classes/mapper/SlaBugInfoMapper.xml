@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dto.BugInfoDTO">
+    <resultMap id="slaBugInfo" type="com.haier.adp.sla.dto.BugInfoDTO">
+        <id column="id" property="id"/>
+        <result column="list_id" property="listId"/>
+        <result column="type" property="type"/>
+        <result column="quantity" property="quantity"/>
+        <result column="link" property="link"/>
+        <result column="cut_points" property="cutPoints"/>
+        <result column="cut_payment" property="cutPayment"/>
+        <result column="project_name" property="projectName"/>
+    </resultMap>
+
+    <sql id="table">
+        `t_sla_bug`
+    </sql>
+
+    <sql id="columns">
+        `list_id`,`type`,`quantity`,`link`,`cut_points`,`cut_payment`,`project_name`
+    </sql>
+    <sql id="values">
+        #{listId},#{type},#{quantity},#{link},#{cutPoints},#{cutPayment},#{projectName}
+    </sql>
+
+    <insert id="insertBugInfoData" parameterType="com.haier.adp.sla.dto.BugInfoDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+
+    <select id="search" parameterType="com.haier.adp.sla.dto.BugInfoDTO" resultMap="slaBugInfo">
+        select `id`,
+        <include refid="columns"/>
+        FROM
+        <include refid="table"/>
+        <where>
+            <if test="listId != null">
+                and list_id = #{listId}
+            </if>
+        </where>
+    </select>
+    <select id="queryCount" parameterType="com.haier.adp.sla.dto.BugInfoDTO" resultType="int">
+        select count(*)
+        FROM
+        <include refid="table"/>
+        <where>
+            <if test="listId != null">
+                and list_id = #{listId}
+            </if>
+        </where>
+    </select>
+    <update id="updateListIdForBugData" parameterType="com.haier.adp.sla.dto.BugInfoDTO">
+        update t_sla_bug
+        <set>
+            <if test="listId != null">list_id = #{listId,jdbcType=CHAR}
+            </if>
+        </set>
+        where
+    </update>
+</mapper>
