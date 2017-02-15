@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaBonusesDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaBonusesDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="alm_short_name" property="almShortName" jdbcType="VARCHAR" />
+    <result column="alm_application_id" property="almApplicationId" jdbcType="VARCHAR" />
+    <result column="bonuse_type" property="bonuseType" jdbcType="VARCHAR" />
+    <result column="bonuse_date" property="bonuseDate" jdbcType="DATE" />
+    <result column="bonuse_money" property="bonuseMoney" jdbcType="DOUBLE" />
+    <result column="bonuse_score" property="bonuseScore" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+    <result column="t_sla_list_id" property="tSlaListId" jdbcType="VARCHAR"/>
+    <result column="supplier" property="supplier" jdbcType="VARCHAR"/>
+    <result column="supplier_id" property="supplierId" jdbcType="VARCHAR"/>
+    <result column="if_del" property="ifDel" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, alm_short_name, alm_application_id, bonuse_type, bonuse_date, bonuse_money, bonuse_score, 
+    create_time, operator, operator_id,t_sla_list_id,supplier,supplier_id,if_del
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sla_bonuses
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getSlaBonusesList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from t_sla_bonuses
+    where 1=1 and if_del='0'
+    <if test="projectName!=null">
+      and BINARY alm_short_name =#{projectName}
+    </if>
+    <if test="id!=null">
+      and id = #{id}
+    </if>
+    <if test="fromDate!=null">
+      and bonuse_date &gt;= #{fromDate}
+    </if>
+    <if test="toDate!=null">
+      and bonuse_date &lt;= #{toDate}
+    </if>
+    <if test="tSlaListId!=null">
+      and t_sla_list_id = #{tSlaListId}
+    </if>
+    <if test="s_code!=null">
+      and BINARY alm_application_id = #{s_code}
+    </if>
+    <if test="supplierId!=null">
+      and supplier_id = #{supplierId}
+    </if>
+    <if test="type==0">
+      and BINARY alm_short_name in
+      <foreach collection="listName" item="name" open="(" close=")" separator="," index="index" >
+        #{name}
+      </foreach>
+    </if>
+     ORDER BY bonuse_date desc
+    <if test="pageSize!=null and startNo!=null">
+      limit #{startNo},#{pageSize}
+    </if>
+  </select>
+  <delete id="delSlaBonuse" parameterType="java.util.Map" >
+    update t_sla_bonuses set if_del='1',operator=#{operator},operator_id=#{operatorId}
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSlaBonusesDTO" parameterType="com.haier.adp.sla.dto.SlaBonusesDTO" keyProperty="id" useGeneratedKeys="true" >
+    insert into t_sla_bonuses (id, alm_short_name, alm_application_id, 
+      bonuse_type, bonuse_date, bonuse_money, 
+      bonuse_score, create_time, operator, 
+      operator_id,t_sla_list_id,supplier,supplier_id,if_del)
+    values (#{id,jdbcType=INTEGER}, #{almShortName,jdbcType=VARCHAR}, #{almApplicationId,jdbcType=VARCHAR}, 
+      #{bonuseType,jdbcType=VARCHAR}, #{bonuseDate,jdbcType=DATE}, #{bonuseMoney,jdbcType=DOUBLE}, 
+      #{bonuseScore,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, 
+      #{operatorId,jdbcType=VARCHAR},#{tSlaListId,jdbcType=VARCHAR},#{supplier,jdbcType=VARCHAR}
+      ,#{supplierId,jdbcType=VARCHAR},#{ifDel,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.haier.adp.sla.dto.SlaBonusesDTO" >
+    insert into t_sla_bonuses
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="almShortName != null" >
+        alm_short_name,
+      </if>
+      <if test="almApplicationId != null" >
+        alm_application_id,
+      </if>
+      <if test="bonuseType != null" >
+        bonuse_type,
+      </if>
+      <if test="bonuseDate != null" >
+        bonuse_date,
+      </if>
+      <if test="bonuseMoney != null" >
+        bonuse_money,
+      </if>
+      <if test="bonuseScore != null" >
+        bonuse_score,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="almShortName != null" >
+        #{almShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="almApplicationId != null" >
+        #{almApplicationId,jdbcType=VARCHAR},
+      </if>
+      <if test="bonuseType != null" >
+        #{bonuseType,jdbcType=VARCHAR},
+      </if>
+      <if test="bonuseDate != null" >
+        #{bonuseDate,jdbcType=DATE},
+      </if>
+      <if test="bonuseMoney != null" >
+        #{bonuseMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="bonuseScore != null" >
+        #{bonuseScore,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateSlaBonuses" parameterType="com.haier.adp.sla.dto.SlaBonusesDTO" >
+    update t_sla_bonuses
+    <set >
+      <if test="almShortName != null" >
+        alm_short_name = #{almShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="almApplicationId != null" >
+        alm_application_id = #{almApplicationId,jdbcType=VARCHAR},
+      </if>
+      <if test="bonuseType != null" >
+        bonuse_type = #{bonuseType,jdbcType=VARCHAR},
+      </if>
+      <if test="bonuseDate != null" >
+        bonuse_date = #{bonuseDate,jdbcType=DATE},
+      </if>
+      <if test="bonuseMoney != null" >
+        bonuse_money = #{bonuseMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="bonuseScore != null" >
+        bonuse_score = #{bonuseScore,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="supplier != null" >
+        supplier = #{supplier,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null" >
+        supplier_id = #{supplierId,jdbcType=VARCHAR},
+      </if>
+      <if test="ifDel != null" >
+        if_del = #{ifDel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.haier.adp.sla.dto.SlaBonusesDTO" >
+    update t_sla_bonuses
+    set alm_short_name = #{almShortName,jdbcType=VARCHAR},
+      alm_application_id = #{almApplicationId,jdbcType=VARCHAR},
+      bonuse_type = #{bonuseType,jdbcType=VARCHAR},
+      bonuse_date = #{bonuseDate,jdbcType=DATE},
+      bonuse_money = #{bonuseMoney,jdbcType=DOUBLE},
+      bonuse_score = #{bonuseScore,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      operator = #{operator,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getBonuseInfo" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT alm_application_id,alm_short_name,bonuse_date,bonuse_money,bonuse_score  FROM t_sla_bonuses WHERE if_del='0'
+    <if test="almApplicationId!=null">
+      AND BINARY alm_application_id=#{almApplicationId}
+    </if>
+    <if test="almShortName!=null">
+      AND BINARY alm_short_name=#{almShortName}
+    </if>
+    <if test="fromDate!=null">
+      AND bonuse_date&gt;=#{fromDate}
+    </if>
+    <if test="toDate!=null">
+      AND bonuse_date&lt;=#{toDate}
+    </if>
+    <if test="supplierId!=null">
+      AND supplier_id=#{supplierId}
+    </if>
+  </select>
+  <select id="getSumScoreAndMoney" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT SUM(bonuse_money) AS bonuse_money,SUM(bonuse_score) AS bonuse_score  FROM t_sla_bonuses WHERE if_del='0'
+    <if test="almApplicationId!=null">
+      AND BINARY alm_application_id=#{almApplicationId}
+    </if>
+    <if test="almShortName!=null">
+      AND BINARY alm_short_name=#{almShortName}
+    </if>
+    <if test="fromDate!=null">
+      AND bonuse_date&gt;=#{fromDate}
+    </if>
+    <if test="toDate!=null">
+      AND bonuse_date&lt;=#{toDate}
+    </if>
+    <if test="supplierId!=null">
+      AND supplier_id=#{supplierId}
+    </if>
+  </select>
+  <update id="updateSlaListId" parameterType="com.haier.adp.sla.dto.SlaBonusesDTO" >
+    update t_sla_bonuses
+    <set>
+      <if test="tSlaListId != null">
+        t_sla_list_id = #{tSlaListId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    <where>
+      <if test="queryStartDate != null">
+        and bonuse_date &gt;= #{queryStartDate}
+      </if>
+      <if test="queryEndDate != null">
+        and bonuse_date &lt;= #{queryEndDate}
+      </if>
+      <if test="almShortName != null">
+        and BINARY alm_short_name = #{almShortName}
+      </if>
+    </where>
+  </update>
+</mapper>

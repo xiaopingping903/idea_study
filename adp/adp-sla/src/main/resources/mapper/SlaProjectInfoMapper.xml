@@ -11,20 +11,55 @@
   <sql id="Base_Column_List" >
     id, alm_short_name,alm_application_id,project_id,project_name
   </sql>
+  <sql id="Join_Column_List" >
+    tspi.id, alm_short_name,alm_application_id,project_id,project_name
+  </sql>
   <select id="getSlaProjectInfoList" resultMap="BaseResultMap" parameterType="java.util.Map">
     select
     <include refid="Base_Column_List" />
     from t_sla_project_info
     where 1=1
-    <if test="projectName!=null">
-    and project_name=#{projectName}
+    <if test="id!=null">
+      and id=#{id}
     </if>
+    <if test="projectName!=null">
+    and BINARY project_name=#{projectName}
+    </if>
+    <if test="almApplicationId!=null">
+      and BINARY alm_application_id=#{almApplicationId}
+    </if>
+    <if test="pageSize!=null and startNo!=null">
+      limit #{startNo},#{pageSize}
+    </if>
+  </select>
+  <select id="getSlaProjectInfoListByScode" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select
+    <include refid="Join_Column_List" />
+    from t_sla_project_info tspi
+    LEFT JOIN t_sla_project_user_info tspui
+    on tspi.id = tspui.t_sla_project_info_id
+    <where>
+      <if test="account != null">
+        tspui.account = #{account}
+      </if>
+      <if test="almApplicationId != null">
+        tspi.alm_application_id = #{almApplicationId}
+      </if>
+    </where>
+    limit #{startNo,jdbcType=DECIMAL},#{pageSize,jdbcType=DECIMAL}
   </select>
   <insert id="insertSlaProjectInfo" parameterType="com.haier.adp.sla.dto.SlaProjectInfoDTO" keyProperty="id" useGeneratedKeys="true">
     insert into t_sla_project_info(id,alm_short_name,alm_application_id,project_id,project_name) VALUES
     (#{id},#{almShortName},#{almApplicationId},#{projectId},#{projectName})
   </insert>
-  <delete id="delProjectInfo">
-    delete from t_sla_project_info
+  <delete id="delProjectInfo" parameterType="java.util.Map">
+    delete from t_sla_project_info where BINARY project_name not in
+    <foreach item="item" index="index" collection="list" open="("
+             separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="updateSlaProjectInfo" parameterType="com.haier.adp.sla.dto.SlaProjectInfoDTO">
+    update t_sla_project_info set alm_short_name=#{almShortName},alm_application_id=#{almApplicationId},project_id=#{projectId} where id=#{id}
   </delete>
 </mapper>

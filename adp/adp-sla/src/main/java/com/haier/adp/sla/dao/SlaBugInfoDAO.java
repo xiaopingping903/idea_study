@@ -18,6 +18,6 @@ public class SlaBugInfoDAO extends MyBatisDao<BugInfoDTO>{
         return this.getSqlSession().selectOne("com.haier.adp.sla.dto.BugInfoDTO.queryCount", searchDTO);
     }
     public int insertBugInfo(BugInfoDTO insertDTO){
-        return this.getSqlSession().selectOne("com.haier.adp.sla.dto.BugInfoDTO.insertBugInfoData", insertDTO);
+        return this.getSqlSession().insert("com.haier.adp.sla.dto.BugInfoDTO.insertBugInfoData", insertDTO);
     }
 }

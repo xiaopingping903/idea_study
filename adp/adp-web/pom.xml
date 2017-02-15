@@ -5,23 +5,24 @@
     <parent>
         <artifactId>adp</artifactId>
         <groupId>com.haier.pmo</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>adp-web</artifactId>
 
     <dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>${spring.boot.version}</version>
+            <version>1.3.3.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
+            <version>1.3.3.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -44,13 +45,13 @@
         <dependency>
             <groupId>com.haier.pmo</groupId>
             <artifactId>adp-kpi-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.haier.pmo</groupId>
             <artifactId>adp-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.sgroschupf</groupId>
@@ -60,7 +61,7 @@
         <dependency>
         <groupId>com.haier.pmo</groupId>
         <artifactId>adp-sla-api</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1</version>
     </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -90,7 +91,26 @@
             <artifactId>profiler-project-api</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
-
+        <!--mq-->
+        <dependency>
+            <groupId>com.haier.interconn</groupId>
+            <artifactId>rmq</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
     </dependencies>
 
 

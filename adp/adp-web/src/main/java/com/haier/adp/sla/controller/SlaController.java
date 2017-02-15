@@ -3,7 +3,6 @@ package com.haier.adp.sla.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.haier.adp.common.constants.Constants;
-import com.haier.adp.jira.BasicService;
 import com.haier.adp.jira.MetricJiraService;
 import com.haier.adp.jira.dto.BugStatisticsInfo;
 import com.haier.adp.jira.dto.StoryTransferInfo;
@@ -11,6 +10,7 @@ import com.haier.adp.jira.impl.MetricJiraServiceImpl;
 import com.haier.adp.sla.dto.*;
 import com.haier.adp.sla.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -43,18 +44,21 @@ public class SlaController {
     @Autowired
     private static final MetricJiraService jiraService = new MetricJiraServiceImpl();
     @Autowired
-    private static final BasicService basicService = new BasicService();
-    @Autowired
     private SlaInterfaceService slaInterfaceService;
     @Autowired
     private SlaProjectInfoService slaProjectInfoService;
+    @Autowired
+    private SlaProjectUserInfoService slaProjectUserInfoService;
+    @Autowired
+    private SlaBonuseService slaBonuseService;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    //返回SLA记录一览页面需要的数据
     @RequestMapping(value = "/getSlaList", method = RequestMethod.POST, consumes = "application/json")
     public @ResponseBody JSONObject getSlaList(@RequestBody Map para) {
         SlaListDTO searchDTO = new SlaListDTO();
         int pageNo = 0;
-        int pageSize = 10;
+        int pageSize = 1000;
         if (para.get("fromDate") != null && para.get("toDate") != null){
             try {
                 String dateStringFrom = para.get("fromDate").toString();
@@ -81,12 +85,48 @@ public class SlaController {
         int startNo = pageNo * pageSize;
         searchDTO.setStartNo(startNo);
         searchDTO.setPageSize(pageSize);
-        int count = slaOTDService.queryListCount(searchDTO);
-        List<SlaListDTO> result = slaOTDService.getSlaList(searchDTO);
-
+        //权限控制
+        String thirdUid = "";
+        if(para.get("thirdUid") != null){
+            thirdUid = para.get("thirdUid").toString();
+        }
         JSONObject resultData = new JSONObject();
-        resultData.put("total", count);
-        resultData.put("list", result);
+        if (!"".equals(thirdUid)){
+            Map queryMap = new HashMap();
+            queryMap.put("account", thirdUid);
+            List<SlaProjectUserInfoDTO> userInfo = slaProjectUserInfoService.getSlaProjectUserInfo(queryMap);
+            boolean isAdmin = false;
+            for (SlaProjectUserInfoDTO userDTO : userInfo) {
+                String role = userDTO.getRole();
+                if (role != null && !"".equals(role)) {
+                    if (role.contains(Constants.SYS_ROLES.SYSTEM_ADMIN) || role.contains(Constants.SYS_ROLES.ORG_ADMIN)) {
+                        isAdmin = true;
+                    }
+                }
+            }
+            if (!isAdmin) {
+                Set<SlaListDTO> resultSet = new HashSet<SlaListDTO>();
+                Map query = new HashMap();
+                query.put("account", thirdUid);
+                List<SlaProjectInfoDTO> infoList = slaProjectInfoService.getSlaProjectInfoListByScode(query);
+                if (infoList != null && infoList.size() > 0) {
+                    for (SlaProjectInfoDTO info : infoList) {
+                        String infoStr = info.getAlmApplicationId();
+                        searchDTO.setAlmApplicationSCodes(infoStr);
+                        List<SlaListDTO> result = slaOTDService.getSlaList(searchDTO);
+                        for (SlaListDTO listDTO : result) {
+                            resultSet.add(listDTO);
+                        }
+                    }
+                }
+                resultData.put("total", resultSet.size());
+                resultData.put("list", resultSet);
+            } else {
+                List<SlaListDTO> result = slaOTDService.getSlaList(searchDTO);
+                resultData.put("total", result.size());
+                resultData.put("list", result);
+            }
+        }
         return resultData;
     }
     @RequestMapping(value = "/getSysOperEntranceData", method = RequestMethod.POST, consumes = "application/json")
@@ -157,7 +197,7 @@ public class SlaController {
 
         return resultData;
     }
-
+    //SLA记录一览页面点击详情后，返回该条SLA对应的SLA1和SLA2数据。
     @RequestMapping(value = "/getSlaDetail", method = RequestMethod.POST, consumes = "application/json")
     public @ResponseBody JSONObject getSlaDetail(@RequestBody Map para) {
         JSONObject resultData = new JSONObject();
@@ -178,8 +218,10 @@ public class SlaController {
         String queryStartDate = "";
         String queryEndDate = "";
         if (searchList != null){
-            queryStartDate = searchList.get(0).getStageBeginDate().toString();
+            queryStartDate = searchList.get(0).getStageStartDate().toString();
             queryEndDate = searchList.get(0).getStageEndDate().toString();
+            queryStartDate = queryStartDate + " 00:00:00";
+            queryEndDate = queryEndDate + " 23:59:59";
         }
         JSONObject taskResult = new JSONObject();
         taskResult.put("total", taskCount);
@@ -197,6 +239,7 @@ public class SlaController {
                 for (SlaProjectRelDTO dto : projectNames) {
                     JSONObject result = new JSONObject();
                     String projectName = dto.getProjectName();
+                    String projectScode = dto.getAlmAppScode();
                     result.put("projectName", projectName);
                     // sla2 bug
                     List<BugInfoDTO> bugInfoList = new ArrayList<BugInfoDTO>();
@@ -218,6 +261,8 @@ public class SlaController {
                         queryPara.put("tSlaListId", para.get("listId").toString());
                         int listId = Integer.parseInt(para.get("listId").toString());
                         queryPara.put("almShortName", projectName);
+                        queryPara.put("fromDate", queryStartDate);
+                        queryPara.put("toDate", queryEndDate);
                         outageDTO = slaOutageService.getOutageInfo(projectName, listId, queryStartDate, queryEndDate);
                         outageCount = slaOutageService.querySlaOutageListCount(queryPara);
                     }
@@ -237,19 +282,20 @@ public class SlaController {
                         int listId = Integer.parseInt(para.get("listId").toString());
                         queryPara.put("almShortName", projectName);
                         dubboDto = slaMonitorService.getMointorInfo(projectName, listId);
-                        outageCount = slaMonitorService.querySlaMonitorListCount(queryPara);
+                        dubboCount = slaMonitorService.querySlaMonitorListCount(queryPara);
                         dubboList.add(dubboDto);
                     }
                     JSONObject dubboResult = new JSONObject();
-                    dubboResult.put("total", outageCount);
+                    dubboResult.put("total", dubboCount);
                     dubboResult.put("list", dubboList);
                     result.put("dubboList", dubboResult);
                     //sla2 bonus
-                    JSONObject bonusResult = new JSONObject();
-                    List bonusList = new ArrayList();
-                    bonusResult.put("total", 0);
-                    bonusResult.put("list", bonusList);
-                    result.put("bonusList", bonusResult);
+                    JSONObject bonuseResult = new JSONObject();
+                    List<SlaBonusesDTO> bonuseList = new ArrayList<SlaBonusesDTO>();
+                    bonuseList = slaBonuseService.getBonuseInfo(projectScode, queryStartDate, queryEndDate);
+                    bonuseResult.put("total", bonuseList.size());
+                    bonuseResult.put("list", bonuseList);
+                    result.put("bonuseList", bonuseResult);
                     if(result != null){
                         sla2List.add(result);
                     }
@@ -268,77 +314,92 @@ public class SlaController {
         listDTO.setIfShown(false);
         slaOTDService.updateListShownStatus(listDTO);
     }
-    // 对资源池类项目,ALM点击付款后，SLAservice通过收到的消息将数据存储到一览表
+    // 对资源池类项目,ALM点击付款后，SLAservice通过收到的消息将数据存储到一览表，同时插入BUG表数据，更新宕机，dubbo表中的listId.
     @RequestMapping(value = "/insertResourcePoolListData", method = RequestMethod.POST, consumes = "application/json")
     public @ResponseBody void insertResourcePoolListData(@RequestBody Object para) {
         JSON json = (JSON)JSON.toJSON(para);
         AlmListDataDTO insertListData = JSON.toJavaObject(json, AlmListDataDTO.class);
         String type = Constants.PROJECT_TYPE.RESOURCE_POOL_PROJECT;
         //存储一条记录到一览表，同时更新detai表中对应story的关联字段
+        //TODO 对insertListData属性添加校验
         int listId = insertListData(insertListData, type);
         if(listId > 0){
             //维护 SLA-PROJECT 关系表，并根据项目名字和时间关联宕机表,dubbo表
-            String[] projectName = insertListData.getProjectName().split(",");
-            for (String project : projectName) {
-                SlaProjectRelDTO dto = new SlaProjectRelDTO();
-                dto.setListId(listId);
-                dto.setProjectName(project);
-                slaProjectRelService.insertSlaProjectRel(dto);
-
-                //outage
-                Map outageMap = new HashMap();
-                outageMap.put("listId", listId);
-                outageMap.put("startDate", insertListData.getStageBeginDate());
-                outageMap.put("endDate", insertListData.getStageEndDate());
-                outageMap.put("projectName", project);
-                slaOutageService.updateSlaListId(outageMap);
-                Map dubboMap = new HashMap();
-                dubboMap.put("listId", listId);
-                dubboMap.put("startDate", insertListData.getStageBeginDate());
-                dubboMap.put("endDate", insertListData.getStageEndDate());
-                dubboMap.put("projectName", project);
-                slaMonitorService.updateSlaListId(dubboMap);
-            }
-            //bug-sla插入
-            insertBugInfo(insertListData, listId);
+            String[] almSCodes = insertListData.getAlmApplicationSCodes().split(",");
+            for (String sCode : almSCodes) {
+                Map searchMap = new HashMap();
+                searchMap.put("almApplicationId", sCode);
+                List<SlaProjectInfoDTO> projectInfoList = slaProjectInfoService.getSlaProjectInfoList(searchMap);
+                if(projectInfoList != null && projectInfoList.size() > 0){
+                    String project = projectInfoList.get(0).getAlmShortName();
+                    SlaProjectRelDTO dto = new SlaProjectRelDTO();
+                    dto.setListId(listId);
+                    dto.setProjectName(project);
+                    dto.setAlmAppScode(sCode);
+                    slaProjectRelService.insertSlaProjectRel(dto);
+                    //outage
+                    Map outageMap = new HashMap();
+                    outageMap.put("listId", listId);
+                    outageMap.put("startDate", insertListData.getStageStartDate());
+                    outageMap.put("endDate", insertListData.getStageEndDate());
+                    outageMap.put("projectName", project);
+                    slaOutageService.updateSlaListId(outageMap);
+                    Map dubboMap = new HashMap();
+                    dubboMap.put("listId", listId);
+                    dubboMap.put("startDate", insertListData.getStageStartDate());
+                    dubboMap.put("endDate", insertListData.getStageEndDate());
+                    dubboMap.put("projectName", project);
+                    slaMonitorService.updateSlaListId(dubboMap);
+                    //bonus
+                    Map bonusMap = new HashMap();
+                    bonusMap.put("listId", listId);
+                    bonusMap.put("startDate", insertListData.getStageStartDate());
+                    bonusMap.put("endDate", insertListData.getStageEndDate());
+                    bonusMap.put("projectName", project);
+                    slaBonuseService.updateSlaListId(bonusMap);
+                }
+                //bug-sla插入
+                insertBugInfo(insertListData, listId);
+                }
         } else {
             log.error("SLA记录失败，请确认数据格式。{}", para.toString());
         }
-
     }
-
-    @RequestMapping(value = "/querySlaData", method = RequestMethod.POST, consumes = "application/json")
-    public @ResponseBody JSONObject querySlaData(@RequestBody Object para) {
-        JSONObject resultData = new JSONObject();
-        JSON json = (JSON)JSON.toJSON(para);
-        AlmListDataDTO listData = JSON.toJavaObject(json, AlmListDataDTO.class);
-        //task list
-        String taskString = listData.getTaskIds();
-        List<SlaDetailDTO> detailResult = new ArrayList<SlaDetailDTO>();
-        if (taskString != null && !"".equals(taskString)) {
-            SlaDetailDTO dto = new SlaDetailDTO();
-            dto.setAlmTaskId(taskString);
-            detailResult = slaOTDService.getSlaDetail(dto);
+    private String getAlmShortNameByScode(String sCodeList){
+        StringBuffer projectStrBuffer = new StringBuffer();
+        String[] almSCodes = sCodeList.split(",");
+        for (String sCode : almSCodes) {
+            Map searchMap = new HashMap();
+            searchMap.put("almApplicationId", sCode);
+            List<SlaProjectInfoDTO> projectInfoList = slaProjectInfoService.getSlaProjectInfoList(searchMap);
+            if (projectInfoList != null && projectInfoList.size() > 0){
+                projectStrBuffer.append(projectInfoList.get(0).getAlmShortName() + ",");
+            }
         }
-        resultData.put("taskList", detailResult);
-        //bug list
-        List<BugInfoDTO> bugResult = new ArrayList<BugInfoDTO>();
-        String projectStr = listData.getProjectName();
-        if(projectStr != null && !"".equals(projectStr)){
-            String[] projects = projectStr.split(",");
+        String projectStr = projectStrBuffer.toString();
+        if(!"".equals(projectStr)){
+            projectStr = projectStr.substring(0, projectStr.length() - 1);
+        }
+        return projectStr;
+    };
+    private List<BugInfoDTO> getBugInfoList(AlmListDataDTO dto){
+        List<BugInfoDTO> result = new ArrayList<BugInfoDTO>();
+        String project = getAlmShortNameByScode(dto.getAlmApplicationSCodes());
+        if(project != null && !"".equals(project)){
+            String[] projects = project.split(",");
             for (String projectName : projects) {
                 Date startDate;
                 Date endDate;
                 try {
-                    startDate = sdf.parse(listData.getStageBeginDate());
-                    endDate = sdf.parse(listData.getStageEndDate());
+                    startDate = sdf.parse(dto.getStageStartDate());
+                    endDate = sdf.parse(dto.getStageEndDate());
                     List<BugStatisticsInfo> resultBug = jiraService.getBugStatistics(projectName, startDate, endDate);
                     for (BugStatisticsInfo info : resultBug) {
-                        BugInfoDTO dto = new BugInfoDTO();
-                        dto.setProjectName(projectName);
-                        dto.setQuantity(info.getQuantity());
-                        dto.setLink(info.getLink());
-                        dto.setType(info.getLevel());
+                        BugInfoDTO bugDto = new BugInfoDTO();
+                        bugDto.setProjectName(projectName);
+                        bugDto.setQuantity(info.getQuantity());
+                        bugDto.setLink(info.getLink());
+                        bugDto.setType(info.getLevel());
                         String level = info.getLevel();
                         int cutPoints = 0;
                         double cutPayment = 0;
@@ -347,116 +408,33 @@ public class SlaController {
                                 cutPoints = 20 * info.getQuantity();
                                 cutPayment = 1;
                                 break;
-                            case "Critical":
+                            case "critical":
                                 cutPoints = 10 * info.getQuantity();
                                 cutPayment = 0.5;
                                 break;
-                            case "Major":
+                            case "major":
                                 cutPoints = 5 * info.getQuantity();
                                 cutPayment = 0.3;
                                 break;
                         }
-                        dto.setCutPoints(cutPoints);
-                        dto.setCutPayment(cutPayment);
-                        int bugCount = slaBugInfoService.insertBugInfo(dto);
-                        if (bugCount == 0){
-                            log.error("插入BUG信息出错。{}" ,dto.toString());
-                        }
-                        bugResult.add(dto);
+                        bugDto.setCutPoints(cutPoints);
+                        bugDto.setCutPayment(cutPayment);
+                        result.add(bugDto);
                     }
                 } catch (Exception e) {
                     log.error("日期格式错误。{}", e);
                 }
             }
-            resultData.put("bugList", bugResult);
         }
-
-        //宕机信息
-        List<SlaOutageInterfaceDTO> outageResult = new ArrayList<SlaOutageInterfaceDTO>();
-        SlaOutageInterfaceDTO outageDTO = new SlaOutageInterfaceDTO();
-        if(projectStr != null && !"".equals(projectStr)){
-            String[] projects = projectStr.split(",");
-            for (String projectName : projects) {
-                String queryStartStr = listData.getStageBeginDate() + " 00:00:00";
-                String queryEndStr = listData.getStageEndDate() + " 23:59:59";
-                Map map = new HashMap();
-                map.put("projectName", projectName);
-                List<SlaProjectInfoDTO> projectInfo = slaProjectInfoService.getSlaProjectInfoList(map);
-                if(projectInfo != null && projectInfo.size() > 0){
-                    String sCode = projectInfo.get(0).getAlmApplicationId();
-                    outageDTO = slaInterfaceService.getOutageInfo(sCode, queryStartStr, queryEndStr);
-                    outageResult.add(outageDTO);
-                }
-            }
-        }
-        resultData.put("outageList", outageResult);
-        //dubbo信息
-        List<SlaMonitorInterfaceDTO> dubboResult = new ArrayList<SlaMonitorInterfaceDTO>();
-        SlaMonitorInterfaceDTO dubboDTO = new SlaMonitorInterfaceDTO();
-        if(projectStr != null && !"".equals(projectStr)){
-            String[] projects = projectStr.split(",");
-            for (String projectName : projects) {
-                Map map = new HashMap();
-                map.put("projectName", projectName);
-                List<SlaProjectInfoDTO> projectInfo = slaProjectInfoService.getSlaProjectInfoList(map);
-                String queryStartStr = listData.getStageBeginDate();
-                String queryEndStr = listData.getStageEndDate();
-                if(projectInfo != null && projectInfo.size() > 0){
-                    String sCode = projectInfo.get(0).getAlmApplicationId();
-                    dubboDTO = slaInterfaceService.getMointorInfo(sCode, queryStartStr, queryEndStr);
-                    dubboResult.add(dubboDTO);
-                }
-            }
-        }
-        resultData.put("dubboList", dubboResult);
-        return resultData;
+        return result;
     }
-
     private void insertBugInfo(AlmListDataDTO insertListData, int listId) {
-        String project = insertListData.getProjectName();
-        if (project != null && !"".equals(project)) {
-            //一个SLA可能关联多个项目
-            String[] projectNames = project.split(",");
-            for (String name : projectNames) {
-                try {
-                    Date startDate = sdf.parse(insertListData.getStageBeginDate());
-                    Date endDate = sdf.parse(insertListData.getStageEndDate());
-                    List<BugStatisticsInfo> bugList = jiraService.getBugStatistics(name, startDate, endDate);
-                    //每个项目固定有3条记录
-                    for (BugStatisticsInfo info : bugList) {
-                        BugInfoDTO bug = new BugInfoDTO();
-                        bug.setType(info.getLevel());
-                        bug.setQuantity(info.getQuantity());
-                        bug.setLink(info.getLink());
-                        bug.setProjectName(name);
-                        bug.setListId(listId);
-                        String level = info.getLevel();
-                        int cutPoints = 0;
-                        double cutPayment = 0;
-                        switch(level){
-                            case "blocker":
-                                cutPoints = 20 * info.getQuantity();
-                                cutPayment = 1;
-                                break;
-                            case "Critical":
-                                cutPoints = 10 * info.getQuantity();
-                                cutPayment = 0.5;
-                                break;
-                            case "Major":
-                                cutPoints = 5 * info.getQuantity();
-                                cutPayment = 0.3;
-                                break;
-                        }
-                        bug.setCutPoints(cutPoints);
-                        bug.setCutPayment(cutPayment);
-                        int bugId = slaBugInfoService.insertBugInfo(bug);
-                        if (bugId == 0){
-                            log.error("插入BUG信息出错。{}" ,bug.toString());
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("查询bug时错误。{}", e);
-                }
+        List<BugInfoDTO> result = new ArrayList<BugInfoDTO>();
+        result = getBugInfoList(insertListData);
+        for (BugInfoDTO bugDTO : result) {
+            int insertCount = slaBugInfoService.insertBugInfo(bugDTO);
+            if (insertCount == 0){
+                log.error("插入BUG信息出错。{}" ,bugDTO.toString());
             }
         }
     }
@@ -466,7 +444,7 @@ public class SlaController {
         SlaListDTO insertDTO = new SlaListDTO();
         insertDTO.setContractStageDesc(para.get("contractStageDesc").toString());
         insertDTO.setType(Constants.PROJECT_TYPE.RESOURCE_POOL_PROJECT);
-        insertDTO.setStageBeginDate(para.get("stageBeginDate").toString());
+        insertDTO.setStageStartDate(para.get("stageStartDate").toString());
         insertDTO.setStageEndDate(para.get("stageEndDate").toString());
 
         insertDTO.setReportCreateDate(sdf.format(new Date()));
@@ -510,8 +488,81 @@ public class SlaController {
         SlaListDTO slaListDTO = new SlaListDTO();
 //        boolean status = updateListData.isPaidInAlm();
 //        slaListDTO.setIfPaid(status);
-        slaListDTO.setTaskId(updateListData.getTaskIds());
+        slaListDTO.setTaskIds(updateListData.getTaskIds());
         slaOTDService.updateListPaidStatus(slaListDTO);
+    }
+    //根据前台的用户信息，返回对其可见的项目信息。
+    @RequestMapping(value = "/getProjectList", method = RequestMethod.POST, consumes = "application/json")
+    public @ResponseBody JSONObject getProjectList(@RequestBody Map para) {
+        JSONObject result = new JSONObject();
+        List<SlaProjectInfoDTO> resultList = new ArrayList<SlaProjectInfoDTO>();
+        int startNo = 0;
+        int pageNo = 0;
+        int pageSize = 100;
+        String thirdUid = "";
+        if (para.get("thirdUid") != null) {
+            thirdUid = para.get("thirdUid").toString();
+            Map queryMap = new HashMap();
+            queryMap.put("account", thirdUid);
+            List<SlaProjectUserInfoDTO> userInfo = slaProjectUserInfoService.getSlaProjectUserInfo(queryMap);
+            boolean isAdmin = false;
+            for (SlaProjectUserInfoDTO userDTO : userInfo) {
+                String role = userDTO.getRole();
+                if (role != null && !"".equals(role)) {
+                    if (role.contains(Constants.SYS_ROLES.SYSTEM_ADMIN) || role.contains(Constants.SYS_ROLES.ORG_ADMIN)) {
+                        isAdmin = true;
+                    }
+                }
+            }
+            if (isAdmin) {
+                Map query = new HashMap();
+                query.put("startNo", startNo);
+                query.put("pageSize", pageSize);
+                query.put("account", thirdUid);
+                List<SlaProjectInfoDTO> infoList = slaProjectInfoService.getSlaProjectInfoListByScode(query);
+                for (SlaProjectInfoDTO dto : infoList) {
+                    String sCode = dto.getAlmApplicationId();
+                    Map argMap = new HashMap();
+                    argMap.put("startNo", startNo);
+                    argMap.put("pageSize", pageSize);
+                    argMap.put("almApplicationId", sCode);
+                    List<SlaProjectInfoDTO> dtoList = slaProjectInfoService.getSlaProjectInfoListByScode(argMap);
+                    dto.setProjectList(dtoList);
+                }
+                resultList.addAll(infoList);
+            } else {
+                for (SlaProjectUserInfoDTO infoDto: userInfo) {
+                    String role = infoDto.getRole();
+                    if (role != null && !"".equals(role)) {
+                        if (para.get("pageNo") != null && para.get("pageSize") != null) {
+                            pageNo = Integer.parseInt(para.get("pageNo").toString());
+                            pageSize = Integer.parseInt(para.get("pageSize").toString());
+                            startNo = (pageNo - 1) * pageSize;
+                        }
+                        if (role.contains(Constants.SYS_ROLES.ORG_MEMBER)) {
+                            Map query = new HashMap();
+                            query.put("thirdUid", thirdUid);
+                            query.put("startNo", startNo);
+                            query.put("pageSize", pageSize);
+                            List<SlaProjectInfoDTO> infoList = slaProjectInfoService.getSlaProjectInfoListByScode(query);
+                            for (SlaProjectInfoDTO dto : infoList) {
+                                String sCode = dto.getAlmApplicationId();
+                                Map argMap = new HashMap();
+                                argMap.put("startNo", startNo);
+                                argMap.put("pageSize", pageSize);
+                                argMap.put("almApplicationId", sCode);
+                                List<SlaProjectInfoDTO> dtoList = slaProjectInfoService.getSlaProjectInfoListByScode(query);
+                                dto.setProjectList(dtoList);
+                            }
+                            resultList.addAll(infoList);
+                        }
+                    }
+                }
+            }
+            result.put("total", resultList.size());
+            result.put("list", resultList);
+        }
+        return result;
     }
 
     public void insertDetailData(AlmDetailDataDTO insertList, String type){
@@ -520,7 +571,7 @@ public class SlaController {
             //try {
                 //Issue storyData = basicService.getJiraIssue(taskIds);
                 SlaDetailDTO insertDTO = new SlaDetailDTO();
-                insertDTO.setProjectName("alm-test");
+                insertDTO.setProjectName("adp-test");
                 insertDTO.setAlmTaskId(taskId);
                 insertDTO.setDelayDays(2);
                 insertDTO.setType("res");
@@ -592,18 +643,19 @@ public class SlaController {
 
         return Integer.parseInt(String.valueOf(between_days));
     }
-    public int insertListData(AlmListDataDTO dto, String type){
+    private int insertListData(AlmListDataDTO dto, String type){
         String[] taskIds = dto.getTaskIds().split(",");
         SlaListDTO insertDTO = new SlaListDTO();
-        insertDTO.setContractStageDesc(dto.getContractStageDesc());
-        insertDTO.setStageBeginDate(dto.getStageBeginDate());
-        insertDTO.setStageEndDate(dto.getStageEndDate());
-        insertDTO.setReportCreateDate(sdf.format(new Date()));
+        try {
+            BeanUtils.copyProperties(insertDTO, dto);
+        } catch (IllegalAccessException e) {
+            log.error("ALM入参错误。{}", e);
+        } catch (InvocationTargetException e) {
+            log.error("复制数据到listDTO发生错误。{}", e);
+        }
         insertDTO.setType(type);
         insertDTO.setIfPaid(true);
         insertDTO.setIfShown(true);
-        insertDTO.setProjectName(dto.getProjectName());
-        insertDTO.setTaskId(dto.getTaskIds());
         int listId = slaOTDService.insertListData(insertDTO);
         for (int i = 0; i < taskIds.length; i++) {
             SlaDetailDTO updateDTO = new SlaDetailDTO();

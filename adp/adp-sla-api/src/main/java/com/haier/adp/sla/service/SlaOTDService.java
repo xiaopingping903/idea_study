@@ -22,4 +22,5 @@ public interface SlaOTDService {
     void updateListIdForDetailData(SlaDetailDTO detailDTO);
     void updateListPaidStatus(SlaListDTO listDTO);
     void updateListShownStatus(SlaListDTO listDTO);
+    void updateSlaDetail(SlaDetailDTO detailDTO);
 }

@@ -22,7 +22,8 @@
                      timeout="100000000" id="slaMonitorService" registry="sla_interface"/>
     <dubbo:reference interface="com.haier.adp.sla.service.SlaProjectInfoService" version="1.0" check="false"
                      timeout="100000000" id="slaProjectInfoService" registry="sla_interface"/>
-
+    <dubbo:reference interface="com.haier.adp.sla.service.SlaProjectUserInfoService" version="1.0" check="false"
+                     timeout="100000000" id="slaProjectUserInfoService" registry="sla_interface"/>
     <dubbo:reference  id="slaOTDService" interface="com.haier.adp.sla.service.SlaOTDService"
                       version="1.0" check="false" timeout="10000000"  registry="sla_interface"/>
     <dubbo:reference  id="slaBugInfoService" interface="com.haier.adp.sla.service.SlaBugInfoService"
@@ -31,6 +32,8 @@
                       version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
     <dubbo:reference  id="slaInterfaceService" interface="com.haier.adp.sla.service.SlaInterfaceService"
                       version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
+    <dubbo:reference  id="slaService" interface="com.haier.adp.sla.service.SlaService"
+                      version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
     <!-- 获取监控数据服务-->
     <dubbo:reference id="profilerReadService" interface="com.haier.profiler.config.service.ProfilerReadService" version="1.0.0"
                      check="false" timeout="1000" registry="paas_interface"/>
@@ -38,6 +41,10 @@
     <!-- 获取项目列表服务 -->
     <dubbo:reference  id="profilerProjectService" interface="com.haier.profiler.project.service.ProfilerProjectService"  check="false"   timeout="1000" version = "1.0.0"
     registry="paas_interface"/>
-
-
+    <!-- 获取奖励服务 -->
+    <dubbo:reference  id="slaBonuseService" interface="com.haier.adp.sla.service.SlaBonuseService"  version="1.0" check="false" timeout="10000000"
+                      registry="sla_interface"/>
+    <!-- 获取alm-jira服务 -->
+    <dubbo:reference  id="slaALMJIRARelationHistoryService" interface="com.haier.adp.sla.service.SlaALMJIRARelationHistoryService"  version="1.0" check="false" timeout="10000000"
+                      registry="sla_interface"/>
 </beans>

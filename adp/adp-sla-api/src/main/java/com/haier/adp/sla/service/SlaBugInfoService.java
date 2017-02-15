@@ -1,7 +1,9 @@
 package com.haier.adp.sla.service;
 
+import com.haier.adp.jira.dto.BugStatisticsInfo;
 import com.haier.adp.sla.dto.BugInfoDTO;
 
+import java.util.Date;
 import java.util.List;
 
 /**

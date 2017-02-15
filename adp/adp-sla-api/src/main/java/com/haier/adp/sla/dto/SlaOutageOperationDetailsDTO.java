@@ -15,7 +15,7 @@ public class SlaOutageOperationDetailsDTO implements Serializable{
     private Integer id;//自增主键
     private String operator;//操作人
     private String operatorId;//操作人id
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Timestamp createTime;//创建时间
     private Integer tSlaOutageId;//t_sla_outage表id
     private Integer tSlaMonitorId;//t_sla_monitor表id

@@ -28,7 +28,18 @@
     <!--  -->
     <bean id="slaProjectInfoService" class="com.haier.adp.sla.service.SlaProjectInfoServiceImpl"/>
     <dubbo:service interface="com.haier.adp.sla.service.SlaProjectInfoService" retries="0" version="1.0" ref="slaProjectInfoService"/>
+    <bean id="slaProjectUserInfoService" class="com.haier.adp.sla.service.SlaProjectUserInfoServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaProjectUserInfoService" retries="0" version="1.0" ref="slaProjectUserInfoService"/>
+    <!-- sla bonuses -->
+    <bean id="slaBonuseService" class="com.haier.adp.sla.service.SlaBonuseServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaBonuseService" version="1.0" ref="slaBonuseService" retries="0"/>
+    <!-- sla alm-jira -->
+    <bean id="slaALMJIRARelationHistoryService" class="com.haier.adp.sla.service.SlaALMJIRARelationHistoryServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaALMJIRARelationHistoryService" version="1.0" ref="slaALMJIRARelationHistoryService" retries="0"/>
+
     <!-- 提供给alm的接口services-->
     <bean id="slaInterfaceService" class="com.haier.adp.sla.service.SlaInterfaceServiceImpl"/>
     <dubbo:service interface="com.haier.adp.sla.service.SlaInterfaceService" retries="0" version="1.0" ref="slaInterfaceService"/>
+    <bean id="slaService" class="com.haier.adp.sla.service.SlaServiceImpl"/>
+    <dubbo:service interface="com.haier.adp.sla.service.SlaService" retries="0" version="1.0" ref="slaService"/>
 </beans>

@@ -1,7 +1,7 @@
 dubbo:
   name: adp-sla-service
   registry: zookeeper://127.0.0.1:2181
-  port: -1
+  port: 20880
   timeout: 10000
   threads: 100
   heart-beats: 10000

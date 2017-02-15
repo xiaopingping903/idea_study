@@ -2,16 +2,11 @@ package com.haier.adp.sla;
 
 import com.haier.adp.common.boot.HaierBanner;
 import com.haier.adp.sla.util.DynamicDataSourceRegister;
-import org.apache.log4j.PropertyConfigurator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Mail: xiao@terminus.io <br>

@@ -18,4 +18,6 @@ public class SlaSupplierDTO implements Serializable {
     private String projectId;
 
     private String selected;
+
+    private int percent;
 }

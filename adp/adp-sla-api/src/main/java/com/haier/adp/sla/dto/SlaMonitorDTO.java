@@ -7,6 +7,7 @@ import net.sf.json.JSONArray;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
+
 @Data
 public class SlaMonitorDTO implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -27,9 +28,9 @@ public class SlaMonitorDTO implements Serializable {
     private int invokedSuccessTotal;
 
     private int invokedFailTotal;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" ,timezone="GMT+8")
     private Timestamp createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd" ,timezone="GMT+8")
     private Date monitorDate;
 
     private String operator;
@@ -46,7 +47,7 @@ public class SlaMonitorDTO implements Serializable {
 
     private String url;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Timestamp operatorTime;
 
     private String remark1;
@@ -58,4 +59,5 @@ public class SlaMonitorDTO implements Serializable {
     private JSONArray supplierList;
     private Date queryStartDate;
     private Date queryEndDate;
+
 }

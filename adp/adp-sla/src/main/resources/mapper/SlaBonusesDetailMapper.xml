@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaBonusesDetailDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaBonusesDetailDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="t_sla_bonuses_type_id" property="tSlaBonusesTypeId" jdbcType="INTEGER" />
+    <result column="bonuse_title" property="bonuseTitle" jdbcType="VARCHAR" />
+    <result column="bonuse_money" property="bonuseMoney" jdbcType="DOUBLE" />
+    <result column="bonuse_score" property="bonuseScore" jdbcType="INTEGER" />
+    <result column="attachment" property="attachment" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="t_sla_bonuses_id" property="tSlaBonusesId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+    <result column="bonuse_content" property="bonuseContent" jdbcType="LONGVARCHAR" />
+    <result column="selected" property="selected" jdbcType="VARCHAR" />
+    <result column="if_del" property="ifDel" jdbcType="VARCHAR"/>
+    <result column="uid" property="uid" jdbcType="VARCHAR"/>
+    <result column="detailId" property="detailId" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, t_sla_bonuses_type_id, bonuse_title, bonuse_money, bonuse_score, attachment, 
+    url, t_sla_bonuses_id, create_time, operator, operator_id,bonuse_content,if_del,uid
+  </sql>
+  <select id="getBonuseItemList" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT a.*,b.attachment,b.url,IF(b.t_sla_bonuses_type_id,1,0) AS selected,b.id as detailId FROM t_sla_bonuses_type a LEFT JOIN (SELECT * FROM t_sla_bonuses_detail WHERE
+    t_sla_bonuses_id=#{tSlaBonusesId} and if_del='0'
+    )b
+    ON a.id=b.t_sla_bonuses_type_id
+  </select>
+  <insert id="insertSlaBonusesDetail" parameterType="com.haier.adp.sla.dto.SlaBonusesDetailDTO" keyProperty="id" useGeneratedKeys="true">
+    insert into t_sla_bonuses_detail(
+    <include refid="Base_Column_List"/>
+    )values(#{id},#{tSlaBonusesTypeId},#{bonuseTitle},#{bonuseMoney},#{bonuseScore},#{attachment},#{url},#{tSlaBonusesId},
+    #{createTime},#{operator},#{operatorId},#{bonuseContent},#{ifDel},#{uid})
+  </insert>
+  <delete id="deleteSlaBonusesDetail" parameterType="java.util.Map">
+    delete from t_sla_bonuses_detail where 1=1
+    <if test="id!=null">
+      and t_sla_bonuses_id=#{id}
+    </if>
+  </delete>
+  <delete id="delSlaBonusesDetail" parameterType="java.util.Map">
+    update t_sla_bonuses_detail set if_del='1' where 1=1
+    <if test="id!=null">
+      and t_sla_bonuses_id=#{id}
+    </if>
+  </delete>
+</mapper>

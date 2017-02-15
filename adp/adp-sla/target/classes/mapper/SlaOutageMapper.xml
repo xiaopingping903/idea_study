@@ -59,33 +59,35 @@
         FROM
         <include refid="table"/>
         where 1=1
+            <if test="type==1">
+                and assess_status='1'
+            </if>
             <if test="fromDate != null">
                 and outage_end_date &gt;= #{fromDate}
             </if>
             <if test="toDate != null">
                 and outage_end_date &lt;= #{toDate}
             </if>
-            <if test="projectName != null">
-                and project_name like CONCAT('%',#{projectName},'%')
-            </if>
+
             <if test="tSlaListId != null">
                 and t_sla_list_id = #{tSlaListId}
             </if>
-            <if test="almShortName != null">
-                and alm_short_name = #{almShortName}
+            <if test="projectName != null">
+                and BINARY alm_short_name = #{projectName}
             </if>
-            <if test="almApplicationId != null">
-                and alm_application_id = #{almApplicationId}
+            <if test="s_code != null">
+                and BINARY alm_application_id = #{s_code}
             </if>
             <if test="id != null">
                 and id = #{id}
             </if>
-            <if test="queryStartDate!=null">
-                and outage_start_date &gt;= #{queryStartDate}
+            <if test="type==0">
+                and BINARY project_name in
+            <foreach collection="listName" item="name" open="(" close=")" separator="," index="index" >
+                #{name}
+            </foreach>
             </if>
-            <if test="queryEndDate!=null">
-                and outage_start_date &lt;= #{queryEndDate}
-            </if>
+             order by outage_start_date desc
             <if test="pageSize!=null and startNo!=null">
                 limit #{startNo},#{pageSize}
             </if>
@@ -101,7 +103,7 @@
         </if>
     </select>
     <select id="getSumOutageTime"  resultType="java.lang.Long">
-    SELECT SUM(outage_time) AS num FROM t_sla_outage   where 1=1
+    SELECT SUM(outage_time) AS num FROM t_sla_outage   where 1=1 and assess_status='1'
     <if test="fromDate != null">
         and outage_end_date &gt;= #{fromDate}
     </if>
@@ -109,20 +111,20 @@
         and outage_end_date &lt;= #{toDate}
     </if>
     <if test="projectName != null">
-        and project_name = #{projectName}
+        and BINARY project_name = #{projectName}
     </if>
     <if test="tSlaListId != null">
         and t_sla_list_id = #{tSlaListId}
     </if>
     <if test="almShortName != null">
-        and alm_short_name = #{almShortName}
+        and BINARY alm_short_name = #{almShortName}
     </if>
     <if test="almApplicationId != null">
-        and alm_application_id = #{almApplicationId}
+        and BINARY alm_application_id = #{almApplicationId}
     </if>
 </select>
     <select id="getTotalCutPayment"  resultType="java.lang.Integer">
-        SELECT SUM(cut_payment) AS num FROM t_sla_outage   where 1=1
+        SELECT SUM(cut_payment) AS num FROM t_sla_outage   where 1=1 and assess_status='1'
         <if test="outage_end_date != null">
             and outage_end_date &gt;= #{fromDate}
         </if>
@@ -130,16 +132,16 @@
             and outage_end_date &lt;= #{toDate}
         </if>
         <if test="projectName != null">
-            and project_name = #{projectName}
+            and BINARY project_name = #{projectName}
         </if>
         <if test="tSlaListId != null">
             and t_sla_list_id = #{tSlaListId}
         </if>
         <if test="almShortName != null">
-            and alm_short_name = #{almShortName}
+            and BINARY alm_short_name = #{almShortName}
         </if>
         <if test="almApplicationId != null">
-            and alm_application_id = #{almApplicationId}
+            and BINARY alm_application_id = #{almApplicationId}
         </if>
     </select>
     <update id="updateSlaOutageData" parameterType="com.haier.adp.sla.dto.SlaOutageDTO">
@@ -173,10 +175,17 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="getSupplierByOutage" parameterType="java.util.Map" resultType="com.haier.adp.sla.dto.SlaSupplierDTO">
-    SELECT IF(m.b_id IS NOT NULL,1,0) AS selected,m.supplier,m.supplier_id as supplierId FROM (SELECT a.supplier,a.supplier_id,b.b_id FROM(SELECT supplier,supplier_id FROM t_sla_supplier WHERE
-    project_name=#{projectName}) a
-    LEFT JOIN
-    (SELECT supplier,supplier_id AS b_id FROM t_sla_outage_supplier_relation WHERE t_sla_outage_id=#{id}) b ON a.supplier_id=b.b_id) m
+        SELECT IF(m.b_id IS NOT NULL,1,0) AS selected,m.supplier,m.supplier_id as supplierId FROM (SELECT a.supplier,a.supplier_id,b.b_id FROM(SELECT supplier,supplier_id FROM t_sla_supplier
+        WHERE BINARY project_name=#{projectName}) a
+        LEFT JOIN
+        (SELECT supplier,supplier_id AS b_id FROM t_sla_outage_supplier_relation WHERE 1=1
+        <if test="tSlaOutageId!=null">
+            and t_sla_outage_id=#{tSlaOutageId}
+        </if>
+        <if test="tSlaMonitorId!=null">
+            and t_sla_monitor_id=#{tSlaMonitorId}
+        </if>
+        ) b ON a.supplier_id=b.b_id) m
     </select>
     <update id="updateSlaListId" parameterType="com.haier.adp.sla.dto.SlaOutageDTO">
         update t_sla_outage
@@ -193,7 +202,61 @@
             and outage_start_date &lt;= #{queryEndDate}
         </if>
         <if test="almShortName != null">
-            and alm_short_name = #{almShortName}
+            and BINARY alm_short_name = #{almShortName}
         </if>
     </update>
+    <select id="getSupplierByScode" parameterType="java.util.Map" resultType="com.haier.adp.sla.dto.SlaSupplierDTO">
+        SELECT m.supplier,m.supplier_id FROM (SELECT supplier,supplier_id
+        FROM t_sla_outage_supplier_relation WHERE TYPE='1' AND t_sla_outage_id IN(SELECT ID FROM t_sla_outage WHERE BINARY alm_application_id=#{almApplicationId}
+        <if test="fromDate != null">
+            and outage_start_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            and outage_start_date &lt;= #{toDate}
+        </if>
+        ))
+        m GROUP BY supplier,supplier_id
+    </select>
+    <select id="getSupplierTimeByScode" parameterType="java.util.Map" resultType="com.haier.adp.sla.dto.SlaOutageDTO">
+        SELECT m.outage_start_date,m.outage_end_date FROM (SELECT a.t_sla_outage_id,a.supplier_id,a.supplier,b.outage_start_date,b.outage_end_date,b.alm_application_id
+        FROM (SELECT * FROM t_sla_outage_supplier_relation WHERE TYPE='1' )a LEFT JOIN
+        (SELECT * FROM t_sla_outage where assess_status='1') b ON a.t_sla_outage_id=b.id)m WHERE BINARY m.alm_application_id=#{almApplicationId}
+        <if test="fromDate != null">
+            and m.outage_start_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            and m.outage_start_date &lt;= #{toDate}
+        </if>
+        AND m.supplier_id=#{supplierId}
+    </select>
+    <select id="getScutPayment" parameterType="java.util.Map" resultType="java.lang.Integer">
+       SELECT SUM(cut_payment) FROM t_sla_outage and assess_status='1'
+        where 1=1
+        <if test="fromDate != null">
+            and outage_start_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            and outage_start_date &lt;= #{toDate}
+        </if>
+        <if test="almApplicationId != null">
+            and BINARY alm_application_id = #{almApplicationId}
+        </if>
+      and id IN (SELECT t_sla_outage_id FROM t_sla_outage_supplier_relation WHERE TYPE='1' AND supplier_id=#{supplierId})
+    </select>
+    <select id="getServiceNum" parameterType="java.util.Map" resultMap="otdList">
+        SELECT id FROM t_sla_outage WHERE project_name IN(SELECT project_name FROM t_sla_project_info WHERE id
+        IN(SELECT t_sla_project_info_id FROM
+        t_sla_project_user_info WHERE user_id=#{userId}) AND assess_status='1'
+    </select>
+    <select id="getNotSetSupplierOutageNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS num FROM t_sla_outage WHERE BINARY alm_application_id=#{almApplicationId}
+        <if test="fromDate != null">
+            and outage_start_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            and outage_start_date &lt;= #{toDate}
+        </if>
+        AND id
+        NOT IN (SELECT DISTINCT t_sla_outage_id FROM t_sla_outage_supplier_relation WHERE TYPE='1')
+    </select>
 </mapper>

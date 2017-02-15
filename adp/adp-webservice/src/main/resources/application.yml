@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: adp-webservice
+dubbo:
+  name: adp-webservice

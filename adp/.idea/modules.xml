@@ -12,6 +12,7 @@
       <module fileurl="file://$PROJECT_DIR$/adp-sla-api/adp-sla-api.iml" filepath="$PROJECT_DIR$/adp-sla-api/adp-sla-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/adp-test/adp-test.iml" filepath="$PROJECT_DIR$/adp-test/adp-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/adp-web/adp-web.iml" filepath="$PROJECT_DIR$/adp-web/adp-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adp-webservice/adp-webservice.iml" filepath="$PROJECT_DIR$/adp-webservice/adp-webservice.iml" />
     </modules>
   </component>
 </project>

@@ -6,7 +6,7 @@
 
     <groupId>com.haier.pmo</groupId>
     <artifactId>adp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1</version>
     <modules>
         <module>adp-common</module>
         <module>adp-config</module>
@@ -17,6 +17,7 @@
         <module>adp-sla-api</module>
         <module>adp-test</module>
         <module>adp-web</module>
+        <module>adp-webservice</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -563,7 +564,7 @@
         <dependency>
             <groupId>com.haier.adp</groupId>
             <artifactId>adp-jenkins</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

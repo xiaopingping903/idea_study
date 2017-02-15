@@ -81,6 +81,13 @@
         <processorPath useClasspath="true" />
         <module name="adp-config-api" />
       </profile>
+      <profile default="false" name="Annotation profile for adp-webservice" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="adp-webservice" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="adp" target="1.7" />
@@ -93,6 +100,7 @@
       <module name="adp-sla-api" target="1.7" />
       <module name="adp-test" target="1.7" />
       <module name="adp-web" target="1.7" />
+      <module name="adp-webservice" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

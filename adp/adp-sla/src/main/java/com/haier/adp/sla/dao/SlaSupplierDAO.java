@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Repository("slaSupplierDAO")
 public class SlaSupplierDAO  extends MyBatisDao<SlaOutageOperationDetailsDTO> {
-    public List<SlaSupplierDTO> getSlaSupplierList(Map map) {
+    public List<SlaSupplierDTO> getSlaSupplierList(Map map){
         return  this.getSqlSession().selectList("com.haier.adp.sla.dao.SlaSupplierDAO.getSlaSupplierList",map);
     }
 }

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaALMJIRARelationHistoryDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaALMJIRARelationHistoryDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="alm_request_id" property="almRequestId" jdbcType="VARCHAR" />
+    <result column="alm_task_id" property="almTaskId" jdbcType="VARCHAR" />
+    <result column="jira_epic_id" property="jiraEpicId" jdbcType="VARCHAR" />
+    <result column="jira_story_id" property="jiraStoryId" jdbcType="VARCHAR" />
+    <result column="task_desc" property="taskDesc" jdbcType="VARCHAR" />
+    <result column="story_desc" property="storyDesc" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+    <result column="sla_update_status" property="slaUpdateStatus" jdbcType="CHAR" />
+    <result column="sla_update_time" property="slaUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="alm_update_status" property="almUpdateStatus" jdbcType="CHAR" />
+    <result column="alm_update_time" property="almUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="jira_update_status" property="jiraUpdateStatus" jdbcType="CHAR" />
+    <result column="jira_update_time" property="jiraUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="if_del" property="ifDel" jdbcType="CHAR" />
+    <result column="task_title" property="taskTitle" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, alm_request_id, alm_task_id, jira_epic_id, jira_story_id, task_desc, story_desc, 
+    create_time, operator, operator_id, sla_update_status, sla_update_time, alm_update_status, 
+    alm_update_time, jira_update_status, jira_update_time, if_del,task_title
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sla_ALM_JIRA_relation_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_sla_ALM_JIRA_relation_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertRelation" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationHistoryDTO" >
+    insert into t_sla_ALM_JIRA_relation_history (id, alm_request_id, alm_task_id, 
+      jira_epic_id, jira_story_id, task_desc, 
+      story_desc, create_time, operator, 
+      operator_id, sla_update_status, sla_update_time, 
+      alm_update_status, alm_update_time, jira_update_status, 
+      jira_update_time, if_del,task_title)
+    values (#{id,jdbcType=INTEGER}, #{almRequestId,jdbcType=VARCHAR}, #{almTaskId,jdbcType=VARCHAR}, 
+      #{jiraEpicId,jdbcType=VARCHAR}, #{jiraStoryId,jdbcType=VARCHAR}, #{taskDesc,jdbcType=VARCHAR}, 
+      #{storyDesc,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, 
+      #{operatorId,jdbcType=VARCHAR}, #{slaUpdateStatus,jdbcType=CHAR}, #{slaUpdateTime,jdbcType=TIMESTAMP}, 
+      #{almUpdateStatus,jdbcType=CHAR}, #{almUpdateTime,jdbcType=TIMESTAMP}, #{jiraUpdateStatus,jdbcType=CHAR}, 
+      #{jiraUpdateTime,jdbcType=TIMESTAMP}, #{ifDel,jdbcType=CHAR},#{taskTitle,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationHistoryDTO" >
+    insert into t_sla_ALM_JIRA_relation_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="almRequestId != null" >
+        alm_request_id,
+      </if>
+      <if test="almTaskId != null" >
+        alm_task_id,
+      </if>
+      <if test="jiraEpicId != null" >
+        jira_epic_id,
+      </if>
+      <if test="jiraStoryId != null" >
+        jira_story_id,
+      </if>
+      <if test="taskDesc != null" >
+        task_desc,
+      </if>
+      <if test="storyDesc != null" >
+        story_desc,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="slaUpdateStatus != null" >
+        sla_update_status,
+      </if>
+      <if test="slaUpdateTime != null" >
+        sla_update_time,
+      </if>
+      <if test="almUpdateStatus != null" >
+        alm_update_status,
+      </if>
+      <if test="almUpdateTime != null" >
+        alm_update_time,
+      </if>
+      <if test="jiraUpdateStatus != null" >
+        jira_update_status,
+      </if>
+      <if test="jiraUpdateTime != null" >
+        jira_update_time,
+      </if>
+      <if test="ifDel != null" >
+        if_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="almRequestId != null" >
+        #{almRequestId,jdbcType=VARCHAR},
+      </if>
+      <if test="almTaskId != null" >
+        #{almTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="jiraEpicId != null" >
+        #{jiraEpicId,jdbcType=VARCHAR},
+      </if>
+      <if test="jiraStoryId != null" >
+        #{jiraStoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskDesc != null" >
+        #{taskDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="storyDesc != null" >
+        #{storyDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="slaUpdateStatus != null" >
+        #{slaUpdateStatus,jdbcType=CHAR},
+      </if>
+      <if test="slaUpdateTime != null" >
+        #{slaUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="almUpdateStatus != null" >
+        #{almUpdateStatus,jdbcType=CHAR},
+      </if>
+      <if test="almUpdateTime != null" >
+        #{almUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jiraUpdateStatus != null" >
+        #{jiraUpdateStatus,jdbcType=CHAR},
+      </if>
+      <if test="jiraUpdateTime != null" >
+        #{jiraUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ifDel != null" >
+        #{ifDel,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateJiraRelation" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationHistoryDTO" >
+    update t_sla_ALM_JIRA_relation_history
+    <set >
+      <if test="almRequestId != null" >
+        alm_request_id = #{almRequestId,jdbcType=VARCHAR},
+      </if>
+      <if test="almTaskId != null" >
+        alm_task_id = #{almTaskId,jdbcType=VARCHAR},
+      </if>
+      <if test="jiraEpicId != null" >
+        jira_epic_id = #{jiraEpicId,jdbcType=VARCHAR},
+      </if>
+      <if test="jiraStoryId != null" >
+        jira_story_id = #{jiraStoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskDesc != null" >
+        task_desc = #{taskDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="storyDesc != null" >
+        story_desc = #{storyDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="slaUpdateStatus != null" >
+        sla_update_status = #{slaUpdateStatus,jdbcType=CHAR},
+      </if>
+      <if test="slaUpdateTime != null" >
+        sla_update_time = #{slaUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="almUpdateStatus != null" >
+        alm_update_status = #{almUpdateStatus,jdbcType=CHAR},
+      </if>
+      <if test="almUpdateTime != null" >
+        alm_update_time = #{almUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jiraUpdateStatus != null" >
+        jira_update_status = #{jiraUpdateStatus,jdbcType=CHAR},
+      </if>
+      <if test="jiraUpdateTime != null" >
+        jira_update_time = #{jiraUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ifDel != null" >
+        if_del = #{ifDel,jdbcType=CHAR},
+      </if>
+      <if test="taskTitle != null" >
+        task_title = #{taskTitle,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationHistoryDTO" >
+    update t_sla_ALM_JIRA_relation_history
+    set alm_request_id = #{almRequestId,jdbcType=VARCHAR},
+      alm_task_id = #{almTaskId,jdbcType=VARCHAR},
+      jira_epic_id = #{jiraEpicId,jdbcType=VARCHAR},
+      jira_story_id = #{jiraStoryId,jdbcType=VARCHAR},
+      task_desc = #{taskDesc,jdbcType=VARCHAR},
+      story_desc = #{storyDesc,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      operator = #{operator,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=VARCHAR},
+      sla_update_status = #{slaUpdateStatus,jdbcType=CHAR},
+      sla_update_time = #{slaUpdateTime,jdbcType=TIMESTAMP},
+      alm_update_status = #{almUpdateStatus,jdbcType=CHAR},
+      alm_update_time = #{almUpdateTime,jdbcType=TIMESTAMP},
+      jira_update_status = #{jiraUpdateStatus,jdbcType=CHAR},
+      jira_update_time = #{jiraUpdateTime,jdbcType=TIMESTAMP},
+      if_del = #{ifDel,jdbcType=CHAR},
+      task_title=#{taskTitle,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getRelationList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from t_sla_ALM_JIRA_relation_history
+    where 1=1
+      <if test="jiraUpdateStatus!=null">
+        and jira_update_status=#{jiraUpdateStatus}
+      </if>
+    <if test="almUpdateStatus!=null">
+      and alm_update_status=#{almUpdateStatus}
+    </if>
+  </select>
+</mapper>

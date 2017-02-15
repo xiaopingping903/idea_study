@@ -12,12 +12,12 @@ import java.util.List;
 @Repository("slaProjectRelDAO")
 public class SlaProjectRelDAO extends MyBatisDao<SlaProjectRelDTO> {
     public List<SlaProjectRelDTO> search(SlaProjectRelDTO searchDTO){
-        return this.getSqlSession().selectList("com.haier.adp.sla.dto.SlaProjectRelDTO.search", searchDTO);
+        return this.getSqlSession().selectList("com.haier.adp.sla.dao.SlaProjectRelDAO.search", searchDTO);
     }
     public int queryCount(SlaProjectRelDTO searchDTO){
-        return this.getSqlSession().selectOne("com.haier.adp.sla.dto.SlaProjectRelDTO.queryCount", searchDTO);
+        return this.getSqlSession().selectOne("com.haier.adp.sla.dao.SlaProjectRelDAO.queryCount", searchDTO);
     }
     public int insertSlaProjectRel(SlaProjectRelDTO insertDTO){
-        return this.getSqlSession().insert("com.haier.adp.sla.dto.SlaProjectRelDTO.insertSlaProjectRel", insertDTO);
+        return this.getSqlSession().insert("com.haier.adp.sla.dao.SlaProjectRelDAO.insertSlaProjectRel", insertDTO);
     }
 }

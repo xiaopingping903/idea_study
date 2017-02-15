@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaProjectUserInfoDAO">
+    <resultMap id="infoList" type="com.haier.adp.sla.dto.SlaProjectUserInfoDTO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="email" property="email"/>
+        <result column="role" property="role"/>
+        <result column="account" property="account"/>
+        <result column="t_sla_project_info_id" property="tSlaProjectInfoId"/>
+    </resultMap>
+    <sql id="table">
+        `t_sla_project_user_info`
+    </sql>
+    <sql id="columns">
+        `user_id`,`user_name`,`email`,`t_sla_project_info_id`,`role`,`account`
+    </sql>
+    <sql id="values">
+        #{userId},#{userName},#{email},#{tSlaProjectInfoId},#{role},#{account}
+    </sql>
+
+    <insert id="insertInfoData" parameterType="com.haier.adp.sla.dto.SlaProjectUserInfoDTO" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="columns"/>) VALUES
+        (<include refid="values"/>)
+    </insert>
+    <delete id="delRoleRel" parameterType="java.util.Map">
+        delete from t_sla_project_user_info where t_sla_project_info_id=#{tSlaProjectInfoId}
+    </delete>
+    <select id="search" parameterType="com.haier.adp.sla.dto.SlaProjectUserInfoDTO" resultMap="infoList">
+        select tsl.`id`,
+        <include refid="columns"/>
+        FROM
+        t_sla_project_user_info tspui
+        LEFT JOIN sla_project_rel spr
+        on tsl.id = spr.list_id
+        <where>
+            <if test="id != null and id != ''">
+                and tsl.id = #{id,jdbcType=DECIMAL}
+            </if>
+            <if test="queryStartDate != null">
+                and tsl.report_create_date &gt;= #{queryStartDate}
+            </if>
+            <if test="queryEndDate != null">
+                and tsl.report_create_date &lt;= #{queryEndDate}
+            </if>
+            <if test="contractStageDesc != null and contractStageDesc != ''">
+                and tsl.contract_stage_desc like '%'||#{contractStageDesc,jdbcType=VARCHAR}||'%'
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and spr.project_name = #{projectName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        limit #{startNo,jdbcType=DECIMAL},#{pageSize,jdbcType=DECIMAL}
+    </select>
+    <select id="queryCount" parameterType="com.haier.adp.sla.dto.SlaProjectUserInfoDTO" resultType="int">
+        select count(*)
+        FROM
+        t_sla_project_user_info tspui
+        <where>
+            <if test="queryStartDate != null">
+                and tsl.report_create_date &gt;= #{queryStartDate}
+            </if>
+            <if test="queryEndDate != null">
+                and tsl.report_create_date &lt;= #{queryEndDate}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and spr.project_name = #{projectName,jdbcType=VARCHAR}
+            </if>
+            <if test="contractStageDesc != null and contractStageDesc != ''">
+                and tsl.contract_stage_desc like '%'||#{contractStageDesc,jdbcType=VARCHAR}||'%'
+            </if>
+        </where>
+    </select>
+    <update id="updateListPaidStatus" parameterType="com.haier.adp.sla.dto.SlaProjectUserInfoDTO">
+        update t_sla_project_user_info
+        <set>
+            <if test="ifPaid != null">if_paid = #{ifPaid,jdbcType=BOOLEAN}
+            </if>
+        </set>
+        where taskIds = #{taskIds,jdbcType=VARCHAR}
+    </update>
+    <update id="updateListShownStatus" parameterType="com.haier.adp.sla.dto.SlaProjectUserInfoDTO">
+        update t_sla_project_user_info
+        <set>
+            <if test="ifShown != null">if_shown = #{ifShown,jdbcType=BOOLEAN}
+            </if>
+        </set>
+        where id = #{id,jdbcType=DECIMAL}
+    </update>
+    <select id="getPMList" parameterType="java.util.Map" resultMap="infoList">
+        SELECT DISTINCT user_id,email FROM t_sla_project_user_info WHERE t_sla_project_info_id IN(
+        SELECT id FROM t_sla_project_info WHERE BINARY project_name IN(SELECT DISTINCT project_name
+        FROM t_sla_outage WHERE  create_time&gt;=#{fromDate}
+        AND create_time&lt;=#{toDate} AND assess_status='1'))  AND FIND_IN_SET('projectManager', role)
+    </select>
+    <select id="getPMMonitorList" parameterType="java.util.Map" resultMap="infoList">
+        SELECT DISTINCT user_id,email FROM t_sla_project_user_info WHERE t_sla_project_info_id IN(
+        SELECT id FROM t_sla_project_info WHERE BINARY project_name IN(SELECT DISTINCT project_name FROM t_sla_monitor
+        WHERE monitor_date&gt;=#{fromDate}
+        AND monitor_date&lt;=#{toDate} AND assess_status='1'))  AND FIND_IN_SET('projectManager', role)
+    </select>
+    <select id="getUserInfo" parameterType="java.util.Map" resultMap="infoList">
+        select * from t_sla_project_user_info where account=#{account}
+    </select>
+</mapper>

@@ -96,6 +96,10 @@ public class SlaOTDServiceImpl implements SlaOTDService {
         slaListDAO.updateListShownStatus(listDTO);
     };
     @Override
+    public void updateSlaDetail(SlaDetailDTO detailDTO){
+        slaDetailDAO.updateSlaDetail(detailDTO);
+    };
+    @Override
     public void updateListPaidStatus(SlaListDTO listDTO){
         slaListDAO.updateListPaidStatus(listDTO);
     };

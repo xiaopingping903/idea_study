@@ -3,14 +3,17 @@ package com.haier.adp.sla.controller;
 import com.haier.adp.sla.dto.SlaMonitorDTO;
 import com.haier.adp.sla.dto.SlaProjectInfoDTO;
 import com.haier.adp.sla.service.SlaMonitorService;
+import com.haier.adp.sla.service.SlaOutageService;
 import com.haier.adp.sla.service.SlaProjectInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -25,28 +28,83 @@ public class SlaMonitorController{
     private SlaMonitorService slaMonitorService;
     @Autowired
     private SlaProjectInfoService slaProjectInfoService;
+    @Autowired
+    private SlaOutageService slaOutageService;
+    @Value("${com.project.serverName}")
+    private String serverName;
     /**
      * 获取dubbo异常信息列表
-     * @param map
+     * @param map 应用简称名称,s_code S码 ,fromDate 宕机开始时间,toDate 宕机结束时间 pageNo 第几页,pageSize 每页多少条 tSlaListId tSlaListId主键
+     * thirdUid portal账号
      * @return
      */
     @RequestMapping(value="/getSlaMonitorList",method =RequestMethod.POST,consumes = "application/json")
-    public @ResponseBody Map<String ,Object> getSlaMonitorList(@RequestBody  Map map){
+    public @ResponseBody Map<String ,Object> getSlaMonitorList(@RequestBody  Map map, HttpServletRequest request){
         Map<String ,Object> result=new HashMap<String,Object>();
-        result.put("list",slaMonitorService.getSlaMonitorList(map));
-        map.put("pageNo",null);
-        map.put("pageSize",null);
-        result.put("total",slaMonitorService.querySlaMonitorListCount(map));
+        String fromServerName=request.getServerName();
+        if(null!=map.get("thirdUid")&&fromServerName.equals(serverName)) {
+            Map mmm = getRole(map.get("thirdUid") + "");
+            map.put("type", mmm.get("type"));
+            map.put("listName", mmm.get("listName"));
+            result.put("list", slaMonitorService.getSlaMonitorList(map));
+            map.put("pageNo", null);
+            map.put("pageSize", null);
+            result.put("total", slaMonitorService.querySlaMonitorListCount(map));
+        }else{
+            result.put("list",null);
+            result.put("total",0);
+        }
         return result;
     }
+
+    /**
+     * 根据用户账户获取角色
+     * @param thirdUid
+     * @return
+     */
+    public Map getRole(String thirdUid){
+        return slaOutageService.getRole(thirdUid);
+    }
+
     /**
      * 更新dubbo异常信息
      */
     @RequestMapping(value = "/updateSlaMonitorData", method = RequestMethod.POST,consumes = "application/json")
-    public @ResponseBody void updateSlaMonitorData(@RequestBody Map map){
-        slaMonitorService.updateSlaMonitorData(map);
-    }
+    public @ResponseBody Map<String, Object> updateSlaMonitorData(@RequestBody Map map,HttpServletRequest request){
+        String fromServerName=request.getServerName();
+        Map<String, Object> result = new HashMap<String, Object>();
+        String ifSuccess="1";
+        try{
+            if(fromServerName.equals(serverName)){
+                slaMonitorService.updateSlaMonitorData(map);
+            }else{
+                ifSuccess="0";
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ifSuccess="0";
+        }
+        result.put("ifSuccess",ifSuccess);
+        return result;
 
+    }
+    /**
+     * 更新供应商占比
+     *projectName 应用简称  supplierList 供应商
+     */
+    @RequestMapping(value = "/updateSupplierPercent", method = RequestMethod.POST,consumes = "application/json")
+    public @ResponseBody Map<String,Object> updateSupplierPercent(@RequestBody Map map,HttpServletRequest request){
+        String fromServerName=request.getServerName();
+        Map<String ,Object> result=new HashMap<String,Object>();
+        String ifSuccess="1";
+        if(fromServerName.equals(serverName)){
+            ifSuccess = slaMonitorService.updateSupplierPercent(map);
+        }else{
+            ifSuccess="0";
+        }
+        result.put("ifSuccess",ifSuccess);
+        return result;
+    }
     /**
      * 模拟插入
      */

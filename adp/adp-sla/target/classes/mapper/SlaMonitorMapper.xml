@@ -42,23 +42,14 @@
   <include refid="Base_Column_List" />
   from t_sla_monitor
   where 1=1
-  <if test="fromDate != null">
-    and monitor_date &gt;= #{fromDate}
-  </if>
-  <if test="toDate != null">
-    and monitor_date &lt;= #{toDate}
-  </if>
-  <if test="projectName != null">
-  and project_name like CONCAT('%',#{projectName},'%')
-</if>
   <if test="tSlaListId != null">
     and t_sla_list_id = #{tSlaListId}
   </if>
-  <if test="almShortName != null">
-    and alm_short_name = #{almShortName}
+  <if test="projectName != null">
+    and BINARY alm_short_name = #{projectName}
   </if>
-  <if test="almApplicationId != null">
-    and alm_application_id = #{almApplicationId}
+  <if test="s_code != null">
+    and BINARY alm_application_id = #{s_code}
   </if>
   <if test="fromDate != null">
     and monitor_date &gt;= #{fromDate}
@@ -66,6 +57,13 @@
   <if test="toDate != null">
     and monitor_date &lt;= #{toDate}
   </if>
+  <if test="type==0">
+    and BINARY project_name in
+    <foreach collection="listName" item="name" open="(" close=")" separator="," index="index" >
+      #{name}
+    </foreach>
+  </if>
+   order by monitor_date desc
   <if test="pageSize!=null and startNo!=null">
     limit #{startNo},#{pageSize}
   </if>
@@ -95,7 +93,7 @@
 
 <select id="getPercent" parameterType="java.util.Map" resultMap="BaseResultMap" >
   SELECT SUM(t.invoked_total) AS invoked_total,SUM(t.invoked_success_total) AS invoked_success_total,SUM(t.invoked_fail_total) AS invoked_fail_total FROM t_sla_monitor  t
-  where 1=1
+  where 1=1 and assess_status='1'
   <if test="fromDate != null">
     and monitor_date &gt;= #{fromDate}
   </if>
@@ -103,16 +101,16 @@
     and monitor_date &lt;= #{toDate}
   </if>
   <if test="projectName != null">
-    and project_name = #{projectName}
+    and BINARY project_name = #{projectName}
   </if>
   <if test="tSlaListId != null">
     and t_sla_list_id = #{tSlaListId}
   </if>
   <if test="almShortName != null">
-    and alm_short_name = #{almShortName}
+    and BINARY alm_short_name = #{almShortName}
   </if>
   <if test="almApplicationId != null">
-    and alm_application_id = #{almApplicationId}
+    and BINARY alm_application_id = #{almApplicationId}
   </if>
 </select>
 
@@ -147,7 +145,7 @@
       t_sla_list_id = #{tSlaListId,jdbcType=VARCHAR},
     </if>
   </set>
-  where 1 = 1
+  <where>
   <if test="queryStartDate != null">
     and monitor_date &gt;= #{queryStartDate}
   </if>
@@ -157,11 +155,19 @@
   <if test="almShortName != null">
     and alm_short_name = #{almShortName}
   </if>
+  </where>
 </update>
 <select id="getSupplierByMonitor" parameterType="java.util.Map" resultType="com.haier.adp.sla.dto.SlaSupplierDTO">
   SELECT IF(m.b_id IS NOT NULL,1,0) AS selected,m.supplier,m.supplier_id as supplierId FROM (SELECT a.supplier,a.supplier_id,b.b_id FROM(SELECT supplier,supplier_id FROM t_sla_supplier WHERE
-  project_name=#{projectName}) a
+  BINARY project_name=#{projectName}) a
   LEFT JOIN
   (SELECT supplier,supplier_id AS b_id FROM t_sla_outage_supplier_relation WHERE t_sla_monitor_id=#{id}) b ON a.supplier_id=b.b_id) m
 </select>
+  <update id="updateSupplierPercent" parameterType="java.util.Map">
+    update t_sla_supplier set percent=#{percent} where BINARY project_name=#{projectName} and supplier_id=#{supplierId}
+  </update>
+  <select id="getServiceNum" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT id FROM t_sla_monitor WHERE BINARY project_name IN(SELECT project_name FROM t_sla_project_info WHERE id IN(SELECT t_sla_project_info_id FROM
+t_sla_project_user_info WHERE user_id=#{userId})) AND assess_status='1'
+  </select>
 </mapper>

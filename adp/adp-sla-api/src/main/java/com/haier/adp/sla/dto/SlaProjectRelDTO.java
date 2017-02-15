@@ -14,4 +14,5 @@ public class SlaProjectRelDTO implements Serializable{
     private int id;
     private int listId;
     private String projectName;
+    private String almAppScode;
 }

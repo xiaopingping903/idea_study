@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.adp.sla.dao.SlaBonusesTypeDAO">
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaBonusesTypeDTO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="bonuse_title" jdbcType="VARCHAR" property="bonuseTitle" />
+    <result column="bonuse_money" jdbcType="DOUBLE" property="bonuseMoney" />
+    <result column="bonuse_score" jdbcType="INTEGER" property="bonuseScore" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="bonuse_content" jdbcType="LONGVARCHAR" property="bonuseContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, bonuse_title, bonuse_money, bonuse_score, create_time,bonuse_content
+  </sql>
+  <select id="getBonusesTypeList" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select * from t_sla_bonuses_type where 1=1
+    <if test="id!=null">
+      and id=#{id}
+    </if>
+  </select>
+</mapper>

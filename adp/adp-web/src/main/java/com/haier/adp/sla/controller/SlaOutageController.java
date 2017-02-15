@@ -6,9 +6,11 @@ import com.haier.adp.sla.service.SlaOutageService;
 import com.haier.adp.sla.service.SlaProjectInfoService;
 import com.haier.adp.util.TestGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,14 +25,17 @@ public class SlaOutageController {
     private SlaOutageService slaOutageService;
     @Autowired
     private SlaProjectInfoService slaProjectInfoService;
+    @Value("${com.project.serverName}")
+    private String serverName;
     /**
      * 宕机确认画面 查询
-     * @param map 包含 projectName 项目名称,fromDate 宕机开始时间,toDate 宕机结束时间 pageNo 第几页,pageSize 每页多少条 tSlaListId tSlaListId主键
+     * @param map 包含 projectName 应用简称名称,s_code S码 ,fromDate 宕机开始时间,toDate 宕机结束时间 pageNo 第几页,pageSize 每页多少条 tSlaListId tSlaListId主键
+     * thirdUid portal账号
      * @return
      */
     @RequestMapping(value = "/getSlaOutageList", method = RequestMethod.POST,consumes = "application/json")
-   // @RequestMapping(value = "/getSlaOutageList", method = RequestMethod.GET)
-    public @ResponseBody Map<String,Object>  getSlaOutageList(@RequestBody Map map) {
+    public @ResponseBody Map<String,Object>  getSlaOutageList(@RequestBody Map map, HttpServletRequest request) {
+        String fromServerName=request.getServerName();
         Map<String, Object> result = new HashMap<String, Object>();
         if(null!=map.get("fromDate")){
             map.put("fromDate",map.get("fromDate")+" 00:00:00");
@@ -38,26 +43,47 @@ public class SlaOutageController {
         if(null!=map.get("toDate")+" 23:59:59"){
             map.put("toDate",map.get("toDate")+" 23:59:59");
         }
-        List<SlaOutageDTO> list=slaOutageService.getSlaOutageList(map);
-        result.put("list",list);
-        if(list.size()>0){
-            map.put("pageNo",null);
-            map.put("pageSize",null);
-            result.put("total",slaOutageService.querySlaOutageListCount(map));
+        if(null!=map.get("thirdUid")&&fromServerName.equals(serverName)){
+            Map mmm=getRole(map.get("thirdUid")+"");
+            map.put("type",mmm.get("type"));
+            map.put("listName",mmm.get("listName"));
+            List<SlaOutageDTO> list=slaOutageService.getSlaOutageList(map);
+            result.put("list",list);
+            if(list.size()>0){
+                map.put("pageNo",null);
+                map.put("pageSize",null);
+                result.put("total",slaOutageService.querySlaOutageListCount(map));
+            }else{
+                result.put("total",0);
+            }
         }else{
+            result.put("list",null);
             result.put("total",0);
         }
         return result;
     }
 
     /**
+     * 根据用户账户获取角色
+     * @param thirdUid
+     * @return
+     */
+    public Map getRole(String thirdUid){
+        return slaOutageService.getRole(thirdUid);
+    }
+    /**
      * 查询供应商信息
-     * @return map projectName 项目名称
+     * @return map projectName 应用简称
      */
    @RequestMapping(value = "/getSlaSupplierList",  method = RequestMethod.POST,consumes = "application/json")
-    public @ResponseBody Map<String,Object> getSlaSupplierList(@RequestBody  Map map){
+    public @ResponseBody Map<String,Object> getSlaSupplierList(@RequestBody  Map map, HttpServletRequest request){
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("list",slaOutageService.getSlaSupplierList(map));
+       String fromServerName=request.getServerName();
+       if(fromServerName.equals(serverName)){
+           result.put("list",slaOutageService.getSlaSupplierList(map));
+       }else{
+           result.put("list",null);
+       }
         return result;
     }
 
@@ -65,8 +91,22 @@ public class SlaOutageController {
      * 更新宕机信息
      */
     @RequestMapping(value = "/updateSlaOutageData", method = RequestMethod.POST,consumes = "application/json")
-    public @ResponseBody void updateSlaOutageData(@RequestBody Map map){
-        slaOutageService.updateSlaOutageData(map);
+    public @ResponseBody Map<String,Object> updateSlaOutageData(@RequestBody Map map,HttpServletRequest request){
+        String fromServerName=request.getServerName();
+        Map<String, Object> result = new HashMap<String, Object>();
+        String ifSuccess="1";
+        try{
+            if(fromServerName.equals(serverName)){
+                slaOutageService.updateSlaOutageData(map);
+            }else{
+                ifSuccess="0";
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ifSuccess="0";
+        }
+        result.put("ifSuccess",ifSuccess);
+        return result;
     }
     /**
      * 根据id获取宕机信息

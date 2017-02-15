@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaALMJIRARelationLogDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaALMJIRARelationLogDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_status" property="updateStatus" jdbcType="CHAR" />
+    <result column="t_sla_ALM_JIRA_relation_history_id" property="tSlaAlmJiraRelationHistoryId" jdbcType="INTEGER" />
+    <result column="if_del" property="ifDel" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, type, update_time, update_status, t_sla_ALM_JIRA_relation_history_id, if_del
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sla_ALM_JIRA_relation_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_sla_ALM_JIRA_relation_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertLog" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationLogDTO" >
+    insert into t_sla_ALM_JIRA_relation_log (id, type, update_time, 
+      update_status, t_sla_ALM_JIRA_relation_history_id, 
+      if_del)
+    values (#{id,jdbcType=INTEGER}, #{type,jdbcType=CHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateStatus,jdbcType=CHAR}, #{tSlaAlmJiraRelationHistoryId,jdbcType=INTEGER}, 
+      #{ifDel,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationLogDTO" >
+    insert into t_sla_ALM_JIRA_relation_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateStatus != null" >
+        update_status,
+      </if>
+      <if test="tSlaAlmJiraRelationHistoryId != null" >
+        t_sla_ALM_JIRA_relation_history_id,
+      </if>
+      <if test="ifDel != null" >
+        if_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateStatus != null" >
+        #{updateStatus,jdbcType=CHAR},
+      </if>
+      <if test="tSlaAlmJiraRelationHistoryId != null" >
+        #{tSlaAlmJiraRelationHistoryId,jdbcType=INTEGER},
+      </if>
+      <if test="ifDel != null" >
+        #{ifDel,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationLogDTO" >
+    update t_sla_ALM_JIRA_relation_log
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateStatus != null" >
+        update_status = #{updateStatus,jdbcType=CHAR},
+      </if>
+      <if test="tSlaAlmJiraRelationHistoryId != null" >
+        t_sla_ALM_JIRA_relation_history_id = #{tSlaAlmJiraRelationHistoryId,jdbcType=INTEGER},
+      </if>
+      <if test="ifDel != null" >
+        if_del = #{ifDel,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.haier.adp.sla.dto.SlaALMJIRARelationLogDTO" >
+    update t_sla_ALM_JIRA_relation_log
+    set type = #{type,jdbcType=CHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_status = #{updateStatus,jdbcType=CHAR},
+      t_sla_ALM_JIRA_relation_history_id = #{tSlaAlmJiraRelationHistoryId,jdbcType=INTEGER},
+      if_del = #{ifDel,jdbcType=CHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

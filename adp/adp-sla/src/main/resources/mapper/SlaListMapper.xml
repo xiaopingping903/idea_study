@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.haier.adp.sla.dto.SlaListDTO">
+<mapper namespace="com.haier.adp.sla.dao.SlaListDAO">
     <resultMap id="otdList" type="com.haier.adp.sla.dto.SlaListDTO">
         <id column="id" property="id"/>
         <result column="contract_stage_desc" property="contractStageDesc"/>
-        <result column="stage_begin_date" property="stageBeginDate"/>
+        <result column="stage_start_date" property="stageStartDate"/>
         <result column="stage_end_date" property="stageEndDate"/>
         <result column="report_create_date" property="reportCreateDate"/>
         <result column="score" property="score"/>
-        <result column="cut_payment" property="cutPayment"/>
         <result column="project_name" property="projectName"/>
         <result column="type" property="type"/>
         <result column="if_paid" property="ifPaid"/>
         <result column="if_shown" property="ifShown"/>
-        <result column="task_id" property="taskId"/>
+        <result column="task_id" property="taskIds"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="supplier" property="supplier"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="creator_name" property="creatorName"/>
+        <result column="total_cut_payment" property="totalCutPayment"/>
+        <result column="alm_application_scodes" property="almApplicationSCodes"/>
     </resultMap>
     <sql id="table">
         `t_sla_list`
     </sql>
     <sql id="columns">
-        `contract_stage_desc`,`stage_begin_date`,`stage_end_date`,`report_create_date`,
-        `score`,`cut_payment`,`project_name`,`type`,`if_paid`,`if_shown`,`task_id`
+        `contract_stage_desc`,`stage_start_date`,`stage_end_date`,`report_create_date`,
+        `score`,`project_name`,`type`,`if_paid`,`if_shown`,`task_id`,
+        `supplier_id`,`supplier`,`creator_id`,`creator_name`,`total_cut_payment`,`alm_application_scodes`
     </sql>
     <sql id="join_columns">
-        `contract_stage_desc`,`stage_begin_date`,`stage_end_date`,`report_create_date`,
-        `score`,`cut_payment`,tsl.`project_name`,`type`,`if_paid`,`if_shown`,`task_id`
+        `contract_stage_desc`,`stage_start_date`,`stage_end_date`,`report_create_date`,
+        `score`,spr.`project_name`,`type`,`if_paid`,`if_shown`,`task_id`,
+        `supplier_id`,`supplier`,`creator_id`,`creator_name`,`total_cut_payment`,`alm_application_scodes`
     </sql>
     <sql id="values">
-        #{contractStageDesc},#{stageBeginDate},#{stageEndDate},#{reportCreateDate},
-        #{score},#{cutPayment},#{projectName},#{type},#{ifPaid},#{ifShown},#{taskId}
+        #{contractStageDesc},#{stageStartDate},#{stageEndDate},#{reportCreateDate},
+        #{score},#{projectName},#{type},#{ifPaid},#{ifShown},#{taskIds},
+        #{supplierId},#{supplier},#{creatorId},#{creatorName},#{totalCutPayment}
     </sql>
 
     <insert id="insertListData" parameterType="com.haier.adp.sla.dto.SlaListDTO" keyProperty="id" useGeneratedKeys="true">
@@ -56,10 +64,13 @@
                 and tsl.report_create_date &lt;= #{queryEndDate}
             </if>
             <if test="contractStageDesc != null and contractStageDesc != ''">
-                and tsl.contract_stage_desc like '%'||#{contractStageDesc,jdbcType=VARCHAR}||'%'
+                and tsl.contract_stage_desc like CONCAT('%',#{contractStageDesc},'%')
             </if>
             <if test="projectName != null and projectName != ''">
                 and spr.project_name = #{projectName,jdbcType=VARCHAR}
+            </if>
+            <if test="almApplicationSCodes != null and almApplicationSCodes != ''">
+                and tsl.alm_application_scodes like CONCAT('%',#{almApplicationSCodes},'%')
             </if>
         </where>
         limit #{startNo,jdbcType=DECIMAL},#{pageSize,jdbcType=DECIMAL}
@@ -91,7 +102,7 @@
             <if test="ifPaid != null">if_paid = #{ifPaid,jdbcType=BOOLEAN}
             </if>
         </set>
-        where taskId = #{taskId,jdbcType=VARCHAR}
+        where taskIds = #{taskIds,jdbcType=VARCHAR}
     </update>
     <update id="updateListShownStatus" parameterType="com.haier.adp.sla.dto.SlaListDTO">
         update t_sla_list

@@ -34,11 +34,25 @@
     <logger name="org.reflections.Reflections" level="ERROR" />
     <logger name="com.alibaba.dubbo" level="ERROR" />
     <logger name="org.apache.zookeeper" level="ERROR" />
-    <logger name="com.haier.adp.sla.dao.SlaOutageDAO" level="DEBUG"/>
-    <logger name="com.haier.adp.sla.dao.SlaSupplierDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaBonusesDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaBonusesDetailDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaBonusesTypeDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaProjectUserInfoDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaALMJIRARelationLogDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaALMJIRARelationHistoryDAO" level="DEBUG"/>
     <logger name="com.haier.adp.sla.dao.PaasOutageDAO" level="DEBUG"/>
-    <logger name="com.haier.adp.sla.dao.SlaOutageOperationDetailsDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaBugInfoDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaDetailDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaListDAO" level="DEBUG"/>
     <logger name="com.haier.adp.sla.dao.SlaMonitorDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaOutageDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaOutageOperationDetailsDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaOutageSupplierRelationDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaProjectInfoDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaProjectRelDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaProjectUserInfoDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaSupplierDAO" level="DEBUG"/>
+    <logger name="com.haier.adp.sla.dao.SlaBonusesAttachmentDAO" level="DEBUG"/>
     <!-- Strictly speaking, the level attribute is not necessary since -->
     <!-- the level of the root level is set to DEBUG by default.       -->
     <root level="INFO">

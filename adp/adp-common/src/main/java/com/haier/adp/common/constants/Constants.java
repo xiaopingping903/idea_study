@@ -23,4 +23,19 @@ public class Constants {
         //系统运维类项目
         String NOT_PAID = "false";
     }
+    //角色合集
+    public interface SYS_ROLES{
+        //企业成员
+        String ORG_MEMBER = "orgMember";
+        //系统管理员
+        String SYSTEM_ADMIN = "systemAdmin";
+        //企业管理员
+        String ORG_ADMIN = "orgAdmin";
+        //项目经理
+        String PROJECT_MANAGER = "projectManager";
+        //项目开发者
+        String PROJECT_DEV = "projectDeveloper";
+        //项目测试人员
+        String PROJECT_TEST = "projectTester";
+    }
 }

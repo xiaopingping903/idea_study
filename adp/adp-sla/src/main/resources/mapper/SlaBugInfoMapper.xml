@@ -39,6 +39,9 @@
             <if test="listId != null">
                 and list_id = #{listId}
             </if>
+            <if test="projectName != null">
+                and project_name = #{projectName}
+            </if>
         </where>
     </select>
     <select id="queryCount" parameterType="com.haier.adp.sla.dto.BugInfoDTO" resultType="int">
@@ -48,6 +51,9 @@
         <where>
             <if test="listId != null">
                 and list_id = #{listId}
+            </if>
+            <if test="projectName != null">
+                and project_name = #{projectName}
             </if>
         </where>
     </select>

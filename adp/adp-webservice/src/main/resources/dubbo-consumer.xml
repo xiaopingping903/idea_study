@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="adp-web-dubbo-consumer" />
+
+    <!-- 使用zookeeper广播注册中心暴露发现服务地址  -->
+    <!--测试环境-->
+    <dubbo:registry address="zookeeper://10.138.8.62:2181" id="sla_interface" />
+    <dubbo:registry address="zookeeper://10.138.8.223:2181" id="paas_interface" />
+    <!--正式环境-->
+    <!--<dubbo:registry  address="zookeeper://10.138.8.223:2181" />-->
+    <dubbo:reference  id="slaOutageService" interface="com.haier.adp.sla.service.SlaOutageService"
+                      version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
+    <dubbo:reference interface="com.haier.adp.sla.service.SlaMonitorService" version="1.0" check="false"
+                     timeout="100000000" id="slaMonitorService" registry="sla_interface"/>
+    <dubbo:reference interface="com.haier.adp.sla.service.SlaProjectInfoService" version="1.0" check="false"
+                     timeout="100000000" id="slaProjectInfoService" registry="sla_interface"/>
+    <dubbo:reference interface="com.haier.adp.sla.service.SlaProjectUserInfoService" version="1.0" check="false"
+                     timeout="100000000" id="slaProjectUserInfoService" registry="sla_interface"/>
+    <dubbo:reference  id="slaOTDService" interface="com.haier.adp.sla.service.SlaOTDService"
+                      version="1.0" check="false" timeout="10000000"  registry="sla_interface"/>
+    <dubbo:reference  id="slaBugInfoService" interface="com.haier.adp.sla.service.SlaBugInfoService"
+                      version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
+    <dubbo:reference  id="slaProjectRelService" interface="com.haier.adp.sla.service.SlaProjectRelService"
+                      version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
+    <dubbo:reference  id="slaInterfaceService" interface="com.haier.adp.sla.service.SlaInterfaceService"
+                      version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
+    <dubbo:reference  id="slaService" interface="com.haier.adp.sla.service.SlaService"
+                      version="1.0" check="false" timeout="10000000" registry="sla_interface"/>
+    <!-- 获取监控数据服务-->
+    <dubbo:reference id="profilerReadService" interface="com.haier.profiler.config.service.ProfilerReadService" version="1.0.0"
+                     check="false" timeout="1000" registry="paas_interface"/>
+
+    <!-- 获取项目列表服务 -->
+    <dubbo:reference  id="profilerProjectService" interface="com.haier.profiler.project.service.ProfilerProjectService"  check="false"   timeout="1000" version = "1.0.0"
+    registry="paas_interface"/>
+    <!-- 获取奖励服务 -->
+    <dubbo:reference  id="slaBonuseService" interface="com.haier.adp.sla.service.SlaBonuseService"  version="1.0" check="false" timeout="10000000"
+                      registry="sla_interface"/>
+    <!-- 获取alm-jira服务 -->
+    <dubbo:reference  id="slaALMJIRARelationHistoryService" interface="com.haier.adp.sla.service.SlaALMJIRARelationHistoryService"  version="1.0" check="false" timeout="10000000"
+                      registry="sla_interface"/>
+</beans>

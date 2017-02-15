@@ -13,10 +13,14 @@ import java.util.Date;
 public class AlmListDataDTO implements Serializable{
     private static final long serialVersionUID = 1L;
 
-    private String contractStageDesc; //付款阶段描述
-    private String stageBeginDate; //开始日
-    private String stageEndDate; //结束日
-    private String projectName; //关联的项目名称列表
+    private String almApplicationSCodes;// Scode
     private String taskIds;//关联的taskID列表
-    private String almAppId;
+    private String stageStartDate; //开始日
+    private String stageEndDate; //结束日
+    private String contractStageDesc; //付款阶段描述
+    private String supplierId;
+    private String supplier;
+    private String creatorId;
+    private String creatorName;
+    private double totalCutPayment;
 }

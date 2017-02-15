@@ -5,7 +5,7 @@
     <parent>
         <artifactId>adp</artifactId>
         <groupId>com.haier.pmo</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,12 @@
         <dependency>
             <groupId>com.haier.pmo</groupId>
             <artifactId>adp-kpi-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.haier.adp.jira</groupId>
+            <artifactId>adp-jira</artifactId>
+            <version>0.0.8</version>
         </dependency>
     </dependencies>
 

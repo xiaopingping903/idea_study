@@ -15,11 +15,10 @@ public class SlaListDTO implements Serializable{
 
     private int id; //id
     private String contractStageDesc; //付款阶段描述 from ALM
-    private String stageBeginDate; //开始日 from ALM
+    private String stageStartDate; //开始日 from ALM
     private String stageEndDate; //结束日 from ALM
     private String reportCreateDate; //报告生成日
     private int score; //得分 from ALM???可能根据下属taskId合计
-    private int cutPayment; //扣款 from ALM???
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date queryStartDate; //查询开始日期
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -30,7 +29,13 @@ public class SlaListDTO implements Serializable{
     private boolean ifPaid;
     // 如果在页面上已经删除，则IfShown为flase
     private boolean ifShown;
-    private String taskId;// from ALM
+    private String taskIds;// from ALM
     private int startNo;
     private int pageSize;
+    private String supplierId;
+    private String supplier;
+    private String creatorId;
+    private String creatorName;
+    private double totalCutPayment;
+    private String almApplicationSCodes;
 }

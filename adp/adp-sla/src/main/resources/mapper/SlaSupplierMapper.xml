@@ -7,9 +7,10 @@
     <result column="supplier" property="supplier" jdbcType="VARCHAR" />
     <result column="project_id" property="projectId" jdbcType="VARCHAR" />
     <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="percent" property="percent" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, supplier_id, supplier
+    id, supplier_id, supplier,project_id,project_name,percent
   </sql>
   <select id="getSlaSupplierList" resultMap="BaseResultMap" parameterType="java.util.Map">
     select
@@ -17,7 +18,13 @@
     from t_sla_supplier
     where 1=1
     <if test="projectName!=null">
-    and project_name=#{projectName}
+      and BINARY project_name=#{projectName}
+    </if>
+    <if test="projectId!=null">
+      and BINARY project_id=#{projectId}
+    </if>
+    <if test="supplierId!=null">
+      and supplier_id=#{supplierId}
     </if>
   </select>
 </mapper>

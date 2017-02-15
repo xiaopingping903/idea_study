@@ -18,8 +18,12 @@ public interface SlaOutageService {
     List<PaasOutageDTO> getPaasOutageList(Map map);
     long getSumOutageTime(Map map);
     List<SlaProjectInfoDTO> getSlaProjectInfoList(Map map) ;
-    public int getTotalTime(List<SlaOutageDTO> slaOutageList);
+    int getTotalTime(List<SlaOutageDTO> slaOutageList);
     //给alm返回宕机稳定性等信息
     SlaOutageInterfaceDTO getOutageInfo(String almShortName,int tSlaListId,String fromDate,String toDate);
     SlaOutageDTO getSlaOutage(int id);
+    List<SlaOutageDTO> getServiceNum(Map map);
+    List<SlaProjectUserInfoDTO> getPMList(Map map);
+    Map getRole(String adpAccountId);
+    int getNotSetSupplierOutageNum(Map map);
 }

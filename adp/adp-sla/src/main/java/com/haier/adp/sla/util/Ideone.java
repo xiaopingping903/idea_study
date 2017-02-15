@@ -11,6 +11,15 @@ import java.util.Stack;
  * Created by Administrator on 2017/1/4.
  */
 public class Ideone {
+    public List<MyTime> getSlaOutageTime(List<SlaOutageDTO> slaOutageDTOList) throws java.lang.Exception {
+        List<MyTime> myTimeList = new ArrayList<MyTime>();
+        for (int i = 0; i < slaOutageDTOList.size(); i++) {
+            SlaOutageDTO sla = slaOutageDTOList.get(i);
+            myTimeList.add(new MyTime(sla.getOutageStartDate().getTime(), sla.getOutageEndDate().getTime()));
+        }
+        Collections.sort(myTimeList);
+        return myTimeList;
+    }
     public int getTotalTime(List<SlaOutageDTO> slaOutageDTOList) throws java.lang.Exception
     {
         List<MyTime> myTimeList = new ArrayList<MyTime>();

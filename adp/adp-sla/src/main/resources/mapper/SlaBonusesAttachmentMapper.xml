@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.adp.sla.dao.SlaBonusesAttachmentDAO" >
+  <resultMap id="BaseResultMap" type="com.haier.adp.sla.dto.SlaBonusesAttachmentDTO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="attachment" property="attachment" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="VARCHAR"/>
+    <result column="t_sla_bonuses_detail_id" property="tSlaBonusesDetailId" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,attachment,
+    url,uid, t_sla_bonuses_detail_id, create_time
+  </sql>
+  <insert id="insertSlaBonusesAttachmentDTO" parameterType="com.haier.adp.sla.dto.SlaBonusesAttachmentDTO" keyProperty="id" useGeneratedKeys="true">
+    insert into t_sla_bonuses_attachment(
+    <include refid="Base_Column_List"/>
+    )VALUES (#{id},#{attachment},#{url},#{uid},#{tSlaBonusesDetailId},#{createTime})
+  </insert>
+  <delete id="deleteSlaBonusesAttachment" parameterType="java.util.Map">
+    DELETE FROM t_sla_bonuses_attachment WHERE t_sla_bonuses_detail_id IN (SELECT id FROM t_sla_bonuses_detail WHERE 1=1
+    <if test="id!=null">
+      and t_sla_bonuses_id=#{id}
+    </if>
+    )
+  </delete>
+  <select id="getBonuseAttachmentList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT * FROM t_sla_bonuses_attachment WHERE t_sla_bonuses_detail_id=#{tSlaBonusesDetailId}
+  </select>
+</mapper>

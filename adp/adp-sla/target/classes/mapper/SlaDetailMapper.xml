@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.haier.adp.sla.dto.SlaDetailDTO">
+<mapper namespace="com.haier.adp.sla.dao.SlaDetailDAO">
     <resultMap id="slaDetail" type="com.haier.adp.sla.dto.SlaDetailDTO">
         <id column="id" property="id"/>
         <result column="list_id" property="listId"/>
@@ -20,6 +20,8 @@
         <result column="type" property="type"/>
         <result column="task_desc" property="taskDesc"/>
         <result column="project_name" property="projectName"/>
+        <result column="story_desc" property="storyDesc"/>
+        <result column="task_title" property="taskTitle"/>
     </resultMap>
 
     <sql id="table">
@@ -28,11 +30,11 @@
 
     <sql id="columns">
         `list_id`,`jira_epic_id`,`jira_story_id`,`alm_request_id`,`alm_task_id`,`if_on_time`,`request_plan_date`,
-        `request_actual_date`,`apply_PD`,`delay_days`,`assign_person`,`cut_points`,`cut_payment`,`if_paid`,`type`,`task_desc`,`project_name`
+        `request_actual_date`,`apply_PD`,`delay_days`,`assign_person`,`cut_points`,`cut_payment`,`if_paid`,`type`,`task_desc`,`project_name`,`task_title`
     </sql>
     <sql id="values">
         #{listId},#{jiraEpicId},#{jiraStoryId},#{almRequestId},#{almTaskId},#{ifOnTime},#{requestPlanDate},
-        #{requestActualDate},#{applyPD},#{delayDays},#{assignPerson},#{cutPoints},#{cutPayment},#{ifPaid},#{type},#{taskDesc},#{projectName}
+        #{requestActualDate},#{applyPD},#{delayDays},#{assignPerson},#{cutPoints},#{cutPayment},#{ifPaid},#{type},#{taskDesc},#{projectName},#{taskTitle}
     </sql>
 
     <insert id="insertDetailData" parameterType="com.haier.adp.sla.dto.SlaDetailDTO" keyProperty="id" useGeneratedKeys="true">
@@ -49,14 +51,11 @@
         <include refid="table"/>
         <where>
             1 = 1
-            <if test="listId != null">
+            <if test="listId != null and listId != 0 ">
                 and list_id = #{listId}
             </if>
             <if test="almTaskId != null">
-                and alm_task_id in
-                <foreach collection = "almTaskId" item = "item" open = "(" separator = "," close = ")" >
-                    #{item}
-                </foreach >
+                and alm_task_id = #{almTaskId}
             </if>
         </where>
     </select>
@@ -80,5 +79,32 @@
             </if>
         </set>
         where binary alm_task_id = #{almTaskId,jdbcType=CHAR}
+    </update>
+    <select id="getSlaALMJIRARelationList" parameterType="java.util.Map" resultMap="slaDetail">
+        SELECT a.* FROM t_sla_detail a  WHERE if_paid=1
+        <if test="id!=null">
+            AND id=#{id}
+        </if>
+        <if test="almRequestId!=null">
+          AND alm_request_id=#{almRequestId}
+        </if>
+        <if test="almTaskId!=null">
+         AND  alm_task_id=#{almTaskId}
+        </if>
+        <if test="projectName!=null">
+            AND  project_name=#{projectName}
+        </if>
+        <if test="almAppScode!=null">
+            AND  alm_app_scode=#{almAppScode}
+        </if>
+        <if test="oldjiraEpicId!=null">
+            AND  jira_epic_id=#{oldjiraEpicId}
+        </if>
+        <if test="oldjiraStoryId!=null">
+            AND  jira_story_id=#{oldjiraStoryId}
+        </if>
+    </select>
+    <update id="updateRelate" parameterType="com.haier.adp.sla.dto.SlaDetailDTO">
+      update t_sla_detail set jira_epic_id=#{jiraEpicId},jira_story_id=#{jiraStoryId},task_title=#{taskTitle} where id=#{id}
     </update>
 </mapper>

@@ -14,7 +14,7 @@ public class SlaOutageSupplierRelationDTO implements Serializable {
     private String supplierId;
 
     private String supplier;
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Timestamp createTime;
 
     private int tSlaOutageId;

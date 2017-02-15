@@ -1,0 +1,6 @@
+
+wsimport -s . µØÖ·
+
+
+
+springboot+webservice http://www.cnblogs.com/fuxin41/p/6289162.html

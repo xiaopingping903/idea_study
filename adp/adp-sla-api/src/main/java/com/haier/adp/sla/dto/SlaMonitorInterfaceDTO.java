@@ -14,6 +14,7 @@ public class SlaMonitorInterfaceDTO implements Serializable{
     private String percent;//稳定性
     private int invokedSuccessTotal;//成功次数
     private int invokedFailTotal;//失败次数
-    private int monitorCutPayment;//扣款人天
+    private double monitorCutPayment;//扣款人天
     private int monitorDeductScore;//扣分
+    private double smonitorCutPayment;//对应供应商的扣款
 }
